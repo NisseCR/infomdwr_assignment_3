@@ -76,13 +76,15 @@ TODO:
 # Scaling should be done when using KNN (distance based algorithm),
 # since distance is sensitive to scale of variables: https://medium.com/codex/why-scaling-your-data-is-important-1aff95ca97a2
 # Scaling is done per data split (train and test) to prevent leakage.
-
 # Exclude outcome "score" during scaling due to immutable benchmark test data.
+# TODO scaling can also be done using caret functions as described here: https://rpubs.com/njvijay/16444
 data_train <- data_train %>%
   mutate(across(.cols = !score & where(is.numeric), scale))
 
 data_test <- data_test %>%
   mutate(across(where(is.numeric), scale))
+
+summary(data_train)
 ```
 
 # Model description
@@ -175,8 +177,7 @@ dotplot(results)
 head(results$values)
 
 # TODO Maybe also consider variable importance, might have surprising insights?
-# e.g.
-varImp(model_knn, scale=FALSE)
+# e.g. varImp(model_knn, scale=FALSE) (code doesn't work yet)
 ```
 
 # Chosen model
