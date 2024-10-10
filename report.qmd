@@ -85,17 +85,24 @@ Describe additional pre-processing steps you have used, if any (e.g., dealing wi
 
 # Model creation
 
+"The random number seed is set before each algorithm is trained to ensure that each algorithm gets the same data partitions and repeats. This allows us to compare apples to apples in the final results" from [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
+
 ```{r}
 #| label: train control
 
-# Set up repeated k-fold cross-validation
+# Set up repeated k-fold cross-validation configuration.
 train_control <- trainControl(method = "cv", number = 10)
 ```
 
 ```{r}
-#| label: model 1 (feature selection)
+#| label: linear regression model
 
-model_1 <- train(
+# Set seed before initialising train_control to create consistent folds across
+# the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
+set.seed(123)
+
+# Create the linear regression model.
+model_lm <- train(
   score ~ .,
   data = data_train,
   method = "lmStepAIC",
@@ -107,36 +114,55 @@ model_1 <- train(
 
 
 ```{r}
-#| label: knn (eda features)
+#| label: knn model
 
-model_2 <- train(
+# Set seed before initialising train_control to create consistent folds across
+# the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
+set.seed(123)
+
+# Create the KNN model.
+model_knn <- train(
   score ~ .,  # TODO remove highly correlated features based on EDA
   data = data_train,
   method = "knn",
   tuneLength = 10, 
   trControl = train_control
 )
-
-model_2
 ```
 
 ```{r}
-#| label: create random-forest
+#| label: random forest model
 
-model_3 <- train(
+# Set seed before initialising train_control to create consistent folds across
+# the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
+set.seed(123)
+
+# Create the random forest model.
+model_rf <- train(
   score ~ .,
   data = data_train,
   method = "rf",
   trControl = train_control
 )
-
-model_3
 ```
 
 
 # Model comparison
 
 Describe how you compare the methods and why. (approx. two or three paragraphs)
+
+```{r}
+#| label: model comparison
+
+# Resampling + comparison method taken from https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/
+results <- resamples(list(LM=model_lm, KNN=model_knn, RF=model_rf))
+summary(results)
+bwplot(results)
+
+# TODO create a custom ggplot that is both aligned (X-axis ticks), faceted and obviously pretty.
+# Do so with the data.frame data provided in results$values.
+head(results$values)
+```
 
 # Chosen model
 
