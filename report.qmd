@@ -86,62 +86,53 @@ Describe additional pre-processing steps you have used, if any (e.g., dealing wi
 # Model creation
 
 ```{r}
-#| label: model 1 (feature selection)
+#| label: train control
 
-# Fit the full model 
-full.model <- lm(score ~., data = data_train)
-
-# Stepwise regression model
-step.model <- step(full.model, direction = "both", trace = FALSE)
-summary(step.model)
-
-# Make model
 # Set up repeated k-fold cross-validation
-train.control <- trainControl(method = "cv", number = 10)
-# Train the model
-model1 <- train(
-  score ~ sex + age + Medu + Mjob + Mjob + Mjob + Mjob + studytime + failures + schoolsup + famsup + romantic + goout + health,
-  data = data_train,
-  method = "lm",
-  trControl = train.control
-)
+train_control <- trainControl(method = "cv", number = 10)
 ```
 
 ```{r}
-#| label: model 2 (eda predictors)
-model2 <- train(
+#| label: model 1 (feature selection)
+
+model_1 <- train(
   score ~ .,
   data = data_train,
-  method = "lm",
-  trControl = train.control
+  method = "lmStepAIC",
+  trace = FALSE, 
+  direction = "backward",
+  trControl = train_control,
 )
-
 ```
+
 
 ```{r}
 #| label: knn (eda features)
 
-
-model_3 <- train(
-  score ~ .,  # TODO eda features
+model_2 <- train(
+  score ~ .,  # TODO remove highly correlated features based on EDA
   data = data_train,
   method = "knn",
-  trControl = train.control
+  tuneLength = 10, 
+  trControl = train_control
 )
 
-model_3
+model_2
 ```
 
 ```{r}
 #| label: create random-forest
 
-model_4 <- train(
+model_3 <- train(
   score ~ .,
   data = data_train,
   method = "rf",
-  trControl = train.control
+  trControl = train_control
 )
+
+model_3
 ```
+
 
 # Model comparison
 

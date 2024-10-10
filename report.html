@@ -3093,6 +3093,7 @@ vertical-align: -.125em;
   <li><a href="#data-description" id="toc-data-description" class="nav-link active" data-scroll-target="#data-description">Data description</a></li>
   <li><a href="#model-description" id="toc-model-description" class="nav-link" data-scroll-target="#model-description">Model description</a></li>
   <li><a href="#data-transformation-and-pre-processing" id="toc-data-transformation-and-pre-processing" class="nav-link" data-scroll-target="#data-transformation-and-pre-processing">Data transformation and pre-processing</a></li>
+  <li><a href="#model-creation" id="toc-model-creation" class="nav-link" data-scroll-target="#model-creation">Model creation</a></li>
   <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison">Model comparison</a></li>
   <li><a href="#chosen-model" id="toc-chosen-model" class="nav-link" data-scroll-target="#chosen-model">Chosen model</a></li>
   <li><a href="#team-member-contributions" id="toc-team-member-contributions" class="nav-link" data-scroll-target="#team-member-contributions">Team member contributions</a></li>
@@ -3139,14 +3140,65 @@ vertical-align: -.125em;
 <section id="data-description" class="level1">
 <h1>Data description</h1>
 <p>Describe the data and use a visualization to support your story. (approx. one or two paragraphs)</p>
+<p>TODO: - var table from csv - hists for each var (cat vs cont) - correlation w/ score (what vars are corr, predict outcome in feature selection)</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># your R code to generate the plot here</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> wt, <span class="at">y =</span> mpg)) <span class="sc">+</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> school   sex          age        address famsize   Pstatus      Medu      
+ GP:276   F:173   Min.   :15.00   U:246   GT3:224   A: 34   Min.   :0.000  
+ MS: 40   M:143   1st Qu.:16.00   R: 70   LE3: 92   T:282   1st Qu.:2.000  
+                  Median :17.00                             Median :3.000  
+                  Mean   :16.75                             Mean   :2.737  
+                  3rd Qu.:18.00                             3rd Qu.:4.000  
+                  Max.   :22.00                             Max.   :4.000  
+      Fedu             Mjob           Fjob            reason      guardian  
+ Min.   :0.000   at_home : 48   teacher : 22   course    :116   mother:214  
+ 1st Qu.:2.000   health  : 28   other   :176   other     : 30   father: 72  
+ Median :2.000   other   :116   services: 88   home      : 88   other : 30  
+ Mean   :2.503   services: 83   health  : 13   reputation: 82               
+ 3rd Qu.:3.000   teacher : 41   at_home : 17                                
+ Max.   :4.000                                                              
+   traveltime      studytime        failures      schoolsup famsup     paid    
+ Min.   :1.000   Min.   :1.000   Min.   :0.0000   yes: 45   no :123   no :178  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.:0.0000   no :271   yes:193   yes:138  
+ Median :1.000   Median :2.000   Median :0.0000                                
+ Mean   :1.453   Mean   :2.035   Mean   :0.3703                                
+ 3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:0.0000                                
+ Max.   :4.000   Max.   :4.000   Max.   :3.0000                                
+ activities nursery   higher    internet  romantic      famrel     
+ no :154    yes:248   yes:298   no : 59   no :213   Min.   :1.000  
+ yes:162    no : 68   no : 18   yes:257   yes:103   1st Qu.:4.000  
+                                                    Median :4.000  
+                                                    Mean   :3.934  
+                                                    3rd Qu.:5.000  
+                                                    Max.   :5.000  
+    freetime         goout            Dalc            Walc      
+ Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+ 1st Qu.:3.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:1.000  
+ Median :3.000   Median :3.000   Median :1.000   Median :2.000  
+ Mean   :3.218   Mean   :3.066   Mean   :1.468   Mean   :2.288  
+ 3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:3.000  
+ Max.   :5.000   Max.   :5.000   Max.   :5.000   Max.   :5.000  
+     health         absences          score         
+ Min.   :1.000   Min.   : 0.000   Min.   :-2.70532  
+ 1st Qu.:3.000   1st Qu.: 0.000   1st Qu.:-0.63494  
+ Median :3.500   Median : 4.000   Median :-0.02769  
+ Mean   :3.465   Mean   : 5.718   Mean   :-0.01620  
+ 3rd Qu.:5.000   3rd Qu.: 8.000   3rd Qu.: 0.64029  
+ Max.   :5.000   Max.   :75.000   Max.   : 2.23458  </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># your R code to generate the plot here</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> wt, <span class="at">y =</span> mpg)) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3165,6 +3217,101 @@ vertical-align: -.125em;
 <h1>Data transformation and pre-processing</h1>
 <p>Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.</p>
 </section>
+<section id="model-creation" class="level1">
+<h1>Model creation</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up repeated k-fold cross-validation</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>train_control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>model_1 <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  score <span class="sc">~</span> .,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_train,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;lmStepAIC&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">trace =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="st">&quot;backward&quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> train_control,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model_2 <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  score <span class="sc">~</span> .,  <span class="co"># </span><span class="al">TODO</span><span class="co"> remove highly correlated features based on EDA</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_train,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuneLength =</span> <span class="dv">10</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> train_control</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>model_2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>k-Nearest Neighbors 
+
+316 samples
+ 30 predictor
+
+No pre-processing
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 284, 285, 284, 284, 284, 285, ... 
+Resampling results across tuning parameters:
+
+  k   RMSE       Rsquared   MAE      
+   5  0.9366545  0.1203568  0.7360600
+   7  0.9463406  0.1036809  0.7464216
+   9  0.9308256  0.1124058  0.7407785
+  11  0.9202810  0.1260730  0.7338559
+  13  0.9149725  0.1369281  0.7255486
+  15  0.9166622  0.1420843  0.7291927
+  17  0.9219035  0.1353278  0.7355503
+  19  0.9246062  0.1383398  0.7411615
+  21  0.9279761  0.1258631  0.7426144
+  23  0.9309015  0.1201276  0.7474014
+
+RMSE was used to select the optimal model using the smallest value.
+The final value used for the model was k = 13.</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_3 <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  score <span class="sc">~</span> .,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_train,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rf&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> train_control</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>model_3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random Forest 
+
+316 samples
+ 30 predictor
+
+No pre-processing
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 285, 284, 285, 284, 284, 284, ... 
+Resampling results across tuning parameters:
+
+  mtry  RMSE       Rsquared   MAE      
+   2    0.9056017  0.2020584  0.7105398
+  20    0.8625058  0.2433863  0.6684533
+  39    0.8690629  0.2378809  0.6704923
+
+RMSE was used to select the optimal model using the smallest value.
+The final value used for the model was mtry = 20.</code></pre>
+</div>
+</div>
+</section>
 <section id="model-comparison" class="level1">
 <h1>Model comparison</h1>
 <p>Describe how you compare the methods and why. (approx. two or three paragraphs)</p>
@@ -3175,12 +3322,12 @@ vertical-align: -.125em;
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">model       =</span> <span class="fu">c</span>(<span class="st">&quot;Cool model 1&quot;</span>, <span class="st">&quot;Cool model 2&quot;</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">performance =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">1.8</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">other       =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.3</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">notes       =</span> <span class="fu">c</span>(<span class="st">&quot;Some note&quot;</span>, <span class="st">&quot;another note&quot;</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">model       =</span> <span class="fu">c</span>(<span class="st">&quot;Cool model 1&quot;</span>, <span class="st">&quot;Cool model 2&quot;</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">performance =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">1.8</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">other       =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.3</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">notes       =</span> <span class="fu">c</span>(<span class="st">&quot;Some note&quot;</span>, <span class="st">&quot;another note&quot;</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
