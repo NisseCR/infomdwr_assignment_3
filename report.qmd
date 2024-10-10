@@ -57,22 +57,32 @@ TODO:
 - var table from csv
 - hists for each var (cat vs cont)
 - correlation w/ score (what vars are corr, predict outcome in feature selection)
-
-```{r}
-#| label: eda
-
-summary(data_train)
-
-```
+- mention prevention of "leakage" by only using `data_train` in EDA.
+- check for outliers?
 
 ```{r}
 #| label: eda visualization
 
-# your R code to generate the plot here
+# TODO add EDA plots.
+# TODO add variable table.
+# TODO consider using few of points from Peng's list (slide) e.g. checking "n's".
+```
 
-ggplot(mtcars, aes(x = wt, y = mpg)) +
-  geom_point() +
-  theme_minimal()
+```{r}
+#| label: preprocessing
+
+# TODO decide whether we should preprocess before or after EDA visualisations. After means working with values that are less interpretable.
+
+# Scaling should be done when using KNN (distance based algorithm),
+# since distance is sensitive to scale of variables: https://medium.com/codex/why-scaling-your-data-is-important-1aff95ca97a2
+# Scaling is done per data split (train and test) to prevent leakage.
+
+# Exclude outcome "score" during scaling due to immutable benchmark test data.
+data_train <- data_train %>%
+  mutate(across(.cols = !score & where(is.numeric), scale))
+
+data_test <- data_test %>%
+  mutate(across(where(is.numeric), scale))
 ```
 
 # Model description
@@ -85,10 +95,10 @@ Describe additional pre-processing steps you have used, if any (e.g., dealing wi
 
 # Model creation
 
-"The random number seed is set before each algorithm is trained to ensure that each algorithm gets the same data partitions and repeats. This allows us to compare apples to apples in the final results" from [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
+"The random number seed is set before each algorithm is trained to ensure that each algorithm gets the same data partitions and repeats. This allows us to compare apples to apples in the final results" - from [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
 
 ```{r}
-#| label: train control
+#| label: train configuration
 
 # Set up repeated k-fold cross-validation configuration.
 train_control <- trainControl(method = "cv", number = 10)
@@ -158,10 +168,15 @@ Describe how you compare the methods and why. (approx. two or three paragraphs)
 results <- resamples(list(LM=model_lm, KNN=model_knn, RF=model_rf))
 summary(results)
 bwplot(results)
+dotplot(results)
 
-# TODO create a custom ggplot that is both aligned (X-axis ticks), faceted and obviously pretty.
+# TODO create a custom ggplot that is both aligned (X-axis ticks), faceted and obviously **pretty**.
 # Do so with the data.frame data provided in results$values.
 head(results$values)
+
+# TODO Maybe also consider variable importance, might have surprising insights?
+# e.g.
+varImp(model_knn, scale=FALSE)
 ```
 
 # Chosen model
