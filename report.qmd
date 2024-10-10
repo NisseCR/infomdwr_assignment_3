@@ -27,6 +27,10 @@ library(tidyverse)
 library(ggplot2)
 # Cross-validation methods
 library(caret)
+# Cross association
+library(GGally)
+
+library(randomForest)
 ```
 
 ```{r}
@@ -49,6 +53,18 @@ set.seed(123)
 
 Describe the data and use a visualization to support your story. (approx. one or two paragraphs)
 
+TODO:
+- var table from csv
+- hists for each var (cat vs cont)
+- correlation w/ score (what vars are corr, predict outcome in feature selection)
+
+```{r}
+#| label: eda
+
+summary(data_train)
+
+```
+
 ```{r}
 #| label: eda visualization
 
@@ -70,18 +86,60 @@ Describe additional pre-processing steps you have used, if any (e.g., dealing wi
 # Model creation
 
 ```{r}
-#| label: model creation
+#| label: model 1 (feature selection)
 
-# Example of k-fold trained model
-data("marketing", package = "datarium")
+# Fit the full model 
+full.model <- lm(score ~., data = data_train)
 
-train_control <- trainControl(method = "cv", number = 10)
+# Stepwise regression model
+step.model <- step(full.model, direction = "both", trace = FALSE)
+summary(step.model)
 
-model <- train(
-  sales ~ ., 
-  data = marketing,
+# Make model
+# Set up repeated k-fold cross-validation
+train.control <- trainControl(method = "cv", number = 10)
+# Train the model
+model1 <- train(
+  score ~ sex + age + Medu + Mjob + Mjob + Mjob + Mjob + studytime + failures + schoolsup + famsup + romantic + goout + health,
+  data = data_train,
   method = "lm",
-  trControl = train_control
+  trControl = train.control
+)
+```
+
+```{r}
+#| label: model 2 (eda predictors)
+model2 <- train(
+  score ~ .,
+  data = data_train,
+  method = "lm",
+  trControl = train.control
+)
+
+```
+
+```{r}
+#| label: knn (eda features)
+
+
+model_3 <- train(
+  score ~ .,  # TODO eda features
+  data = data_train,
+  method = "knn",
+  trControl = train.control
+)
+
+model_3
+```
+
+```{r}
+#| label: create random-forest
+
+model_4 <- train(
+  score ~ .,
+  data = data_train,
+  method = "rf",
+  trControl = train.control
 )
 ```
 
