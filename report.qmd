@@ -29,6 +29,8 @@ library(ggplot2)
 library(caret)
 # Cross association
 library(GGally)
+# correlation graph
+library(reshape2)
 
 library(randomForest)
 ```
@@ -67,6 +69,46 @@ TODO:
 # TODO add variable table.
 # TODO consider using few of points from Peng's list (slide) e.g. checking "n's".
 ```
+
+```{r tile-cor}
+
+# select only numerical variables train dataset
+num_data <- dplyr::select_if(data_train, is.numeric)
+
+# the following code was taken from http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization 
+
+# make the graph for  fully observed dataset:
+
+# compute the correlations across variables
+cormatrix <- cor(num_data, use="complete.obs") %>% round(digits = 2)
+
+# take only half of the correlation matrix to not have repeated values
+get_lower_tri<-function(cormatrix){
+    cormatrix[upper.tri(cormatrix)] <- NA
+    return(cormatrix)
+  }
+lower_tri_c <- get_lower_tri(cormatrix)
+
+# removes the NA values
+melted_cormatrix_c <- melt(lower_tri_c, na.rm = TRUE)
+
+# make the tile graph
+cortile_c <- ggplot(melted_cormatrix_c, aes(y = Var2, x = Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+    name="Pearson\nCorrelation") +
+  theme_minimal()+ 
+ theme(axis.text.x = element_text(angle = 90, vjust = 1, 
+    size = 12, hjust = 1), axis.text.y  = element_text(
+    size = 12))+
+ coord_fixed()
+
+print(cortile_c)
+```
+The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection. 
+
+
 
 ```{r}
 #| label: preprocessing
