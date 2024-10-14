@@ -131,7 +131,9 @@ summary(data_train)
 
 # Model description
 
-Briefly describe which models you compare to perform prediction. (approx. two or three paragraphs)
+For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with custom k value, and a random forest model. These models will be compared by their performance metric mean squared error. To ensure fair comparison and gain the mean squared error for all models, they will all be cross-validated, even if it makes less sense for the model to do so. This is particularly the case for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison. 
+
+The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error. The KNN model will be built using the tunelength parameter. By supplying a tunelength parameter, multiple k values will be used to compute KNN models. Of these multiple models, the model with the lowest mean squared error will be chosen as the final KNN model. Lastly the random forest model will be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the mean squared error will be the lowest. 
 
 # Data transformation and pre-processing
 
@@ -199,6 +201,7 @@ model_rf <- train(
   trControl = train_control
 )
 ```
+
 
 
 # Model comparison
