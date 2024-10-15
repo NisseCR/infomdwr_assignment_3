@@ -152,10 +152,22 @@ The correlation plots reveals relatively weak or lack of correlations between th
 
 
 
+# Model description
+
+For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with custom k value, and a random forest model. These models will be compared by their performance metric mean squared error. To ensure fair comparison and gain the mean squared error for all models, they will all be cross-validated, even if it makes less sense for the model to do so. This is particularly the case for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison. 
+
+The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error. The KNN model will be built using the tunelength parameter. By supplying a tunelength parameter, multiple k values will be used to compute KNN models. Of these multiple models, the model with the lowest mean squared error will be chosen as the final KNN model. Lastly the random forest model will be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the mean squared error will be the lowest. 
+
+# Data transformation and pre-processing
+
+Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.
+
 ```{r}
 #| label: preprocessing
 
-# TODO decide whether we should preprocess before or after EDA visualisations. After means working with values that are less interpretable.
+# Cast variables to factor based on EDA
+factorise <- c("Medu", "Fedu")
+data_train <- data_train %>% mutate_at(vars(factorise), as.factor) 
 
 # Scaling should be done when using KNN (distance based algorithm),
 # since distance is sensitive to scale of variables: https://medium.com/codex/why-scaling-your-data-is-important-1aff95ca97a2
@@ -170,16 +182,6 @@ data_test <- data_test %>%
 
 summary(data_train)
 ```
-
-# Model description
-
-For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with custom k value, and a random forest model. These models will be compared by their performance metric mean squared error. To ensure fair comparison and gain the mean squared error for all models, they will all be cross-validated, even if it makes less sense for the model to do so. This is particularly the case for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison. 
-
-The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error. The KNN model will be built using the tunelength parameter. By supplying a tunelength parameter, multiple k values will be used to compute KNN models. Of these multiple models, the model with the lowest mean squared error will be chosen as the final KNN model. Lastly the random forest model will be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the mean squared error will be the lowest. 
-
-# Data transformation and pre-processing
-
-Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.
 
 # Model creation
 
