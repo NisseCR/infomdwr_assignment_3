@@ -32,7 +32,11 @@ library(GGally)
 # correlation graph
 library(reshape2)
 
+library(ggmice)
+
 library(randomForest)
+
+library(gridExtra)
 ```
 
 ```{r}
@@ -63,12 +67,50 @@ TODO:
 - check for outliers?
 
 ```{r}
+#| label: data type casting
+
+
+```
+
+```{r}
 #| label: eda visualization
 
 # TODO add EDA plots.
 # TODO add variable table.
 # TODO consider using few of points from Peng's list (slide) e.g. checking "n's".
+
+make_hist <- function(col) {
+  ggplot(data_train, aes_string(x = col)) +
+    geom_histogram() +
+    theme_minimal()
+}
+
+
+grid.arrange(
+  make_hist("age"),
+  make_hist("Medu"),
+  make_hist("Fedu"),
+  make_hist("traveltime"),
+  make_hist("studytime"),
+  make_hist("failures"),
+  make_hist("famrel"),
+  make_hist("freetime"),
+  make_hist("goout"),
+  make_hist("Dalc"),
+  make_hist("Walc"),
+  make_hist("health"),
+  make_hist("absences"),
+  make_hist("score"),
+  nrow = 3
+)
 ```
+
+```{r missing}
+plot_pattern(data_train)
+```
+
+other could contain missing as well (disguised v=error)
+
 
 ```{r tile-cor}
 
