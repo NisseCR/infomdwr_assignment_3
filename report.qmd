@@ -154,6 +154,9 @@ The linear regression model will be build using backward stepwise feature select
 
 Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.
 
+
+Why Likert scales can remain numerical:  source: [here](https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/).
+
 ```{r}
 #| label: preprocessing
 
@@ -176,8 +179,8 @@ summary(data_train)
 ```
 
 # Model creation
+We first set up the folds we want to use for the k-fold cross validation. We decided to set k to 10, thus, performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on around 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value 123 before each training algorithm. The seed guarantees that each algorithm is performed on the same data partitions. source: [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
 
-"The random number seed is set before each algorithm is trained to ensure that each algorithm gets the same data partitions and repeats. This allows us to compare apples to apples in the final results" - from [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
 
 ```{r}
 #| label: train configuration
