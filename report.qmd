@@ -267,6 +267,8 @@ head(results$values)
 
 # TODO Maybe also consider variable importance, might have surprising insights?
 # e.g. varImp(model_knn, scale=FALSE) (code doesn't work yet)
+
+#Sara is working
 ```
 
 # Chosen model
