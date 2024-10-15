@@ -214,7 +214,7 @@ set.seed(123)
 
 # Create the KNN model.
 model_knn <- train(
-  score ~ .,  # TODO remove highly correlated features based on EDA
+  score ~ .,  
   data = data_train,
   method = "knn",
   tuneLength = 10, 
