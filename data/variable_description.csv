@@ -1,32 +1,32 @@
-﻿variable type;variable ;description ;type;values;
-outcome;score ; a normalized grade for an exam;;;
-predictor;school ; student's school ; binary ;" ""GP"" Gabriel Pereira or ""MS"" Mousinho da Silveira";
-predictor;sex ; student's sex ; binary ;" ""F"" female or ""M"" male";
-predictor;age ; student's age ; numeric ; from 15 to 22;
-predictor;address ; student's home address type ; binary ;" ""U"" urban or ""R"" rural";
-predictor;famsize ; family size ; binary ;" ""LE3"" less or equal to 3 or ""GT3"" greater than 3";
-predictor;Pstatus ; parent's cohabitation status ; binary ;" ""T"" living together or ""A"" apart";
-predictor;Medu ; mother's education ; numeric ; 0: none,  1: primary education (4th grade), 2: 5th to 9th grade, 3: secondary education or 4: higher education;
-predictor;Fedu ; father's education ; numeric ; 0: none,  1: primary education (4th grade), 2: 5th to 9th grade, 3: secondary education or 4: higher education;
-predictor;Mjob ; mother's job ; nominal;"  ""teacher"", ""health"" care related, civil ""services"" (e.g. administrative or police), ""at_home"" or ""other""";
-predictor;Fjob ; father's job  ; nominal ;" ""teacher"", ""health"" care related, civil ""services"" (e.g. administrative or police), ""at_home"" or ""other""";
-predictor;reason ; reason to choose this school ; nominal ;" close to ""home"", school ""reputation"", ""course"" preference or ""other""";
-predictor;guardian ; student's guardian ; nominal ;" ""mother"", ""father"" or ""other""";
-predictor;traveltime ; home to school travel time ; numeric ; 1: <15 min., 2: 15 to 30 min., 3: 30 min. to 1 hour, or 4: >1 hour;
-predictor;studytime ; weekly study time ; numeric ; 1: <2 hours, 2: 2 to 5 hours, 3: 5 to 10 hours, or 4: >10 hours;
-predictor;failures ; number of past class failures ; numeric ; n if 1<=n<3, else 4;
-predictor;schoolsup ; extra educational support ; binary ; yes or no;
-predictor;famsup ; family educational support ; binary ; yes or no;
-predictor;paid ; extra paid classes within the course subject (Math or Portuguese) ; binary ; yes or no; yes or no
-predictor;activities ;extra curricular activities ; binary ; yes or no;
-predictor;nursery ; attended nursery school ; binary ; yes or no;
-predictor;higher ; wants to take higher education ; binary ; yes or no;
-predictor;internet ; Internet access at home ; binary ; yes or no;
-predictor;romantic ; with a romantic relationship ; binary ; yes or no;
-predictor;famrel ; quality of family relationships ; numeric ; from 1: very bad to 5: excellent;
-predictor;freetime ; free time after school ; numeric ; from 1: very low to 5: very high;
-predictor;goout ; going out with friends ; numeric; from 1: very low to 5: very high;
-predictor;Dalc ; workday alcohol consumption ; numeric ; from 1: very low to 5: very high;
-predictor;Walc ; weekend alcohol consumption ; numeric ; from 1: very low to 5: very high;
-predictor;health ; current health status ; numeric ; from 1: very bad to 5: very good);
-predictor;absences ; number of school absences ; numeric ; from 0 to 93;
+﻿variable type;variable ;description ;type;values
+outcome;score ; a normalized grade for an exam;numerical ;range: 
+predictor;school ; student's school ;categorical;"""GP"" Gabriel Pereira or ""MS"" Mousinho da Silveira"
+predictor;sex ; student's sex ;categorical;"""F"" female or ""M"" male"
+predictor;age ; student's age ;numerical ;range: 15 to 22
+predictor;address ; student's home address type ;categorical;"""U"" urban or ""R"" rural"
+predictor;famsize ; family size ;categorical;"""LE3"" less or equal to 3 or ""GT3"" greater than 3"
+predictor;Pstatus ; parent's cohabitation status ;categorical;"""T"" living together or ""A"" apart"
+predictor;Medu ; mother's education ;categorical;0: none,  1: primary education (4th grade), 2: 5th to 9th grade, 3: secondary education or 4: higher education
+predictor;Fedu ; father's education ;categorical;0: none,  1: primary education (4th grade), 2: 5th to 9th grade, 3: secondary education or 4: higher education
+predictor;Mjob ; mother's job ;categorical;"""teacher"", ""health"" care related, civil ""services"" (e.g. administrative or police), ""at_home"" or ""other"""
+predictor;Fjob ; father's job  ;categorical;"""teacher"", ""health"" care related, civil ""services"" (e.g. administrative or police), ""at_home"" or ""other"""
+predictor;reason ; reason to choose this school ;categorical;"close to ""home"", school ""reputation"", ""course"" preference or ""other"""
+predictor;guardian ; student's guardian ;categorical;"""mother"", ""father"" or ""other"""
+predictor;traveltime ; home to school travel time ;categorical;1: <15 min., 2: 15 to 30 min., 3: 30 min. to 1 hour, or 4: >1 hour
+predictor;studytime ; weekly study time ;categorical;1: <2 hours, 2: 2 to 5 hours, 3: 5 to 10 hours, or 4: >10 hours
+predictor;failures ; number of past class failures ;numerical ;intigers 0 to 3, where 3 indicates 3 or more failures  
+predictor;schoolsup ; extra educational support ;categorical;yes or no
+predictor;famsup ; family educational support ;categorical;yes or no
+predictor;paid ; extra paid classes within the course subject (Math or Portuguese) ;categorical;yes or no
+predictor;activities ;extra curricular activities ;categorical;yes or no
+predictor;nursery ; attended nursery school ;categorical;yes or no
+predictor;higher ; wants to pursue higher education ;categorical;yes or no
+predictor;internet ; Internet access at home ;categorical;yes or no
+predictor;romantic ; with a romantic relationship ;categorical;yes or no
+predictor;famrel ; quality of family relationships ;numerical ;Likert scale: 1: very bad and 5: excellent
+predictor;freetime ; free time after school ;numerical ;Likert scale:  1: very low and 5: very high
+predictor;goout ; going out with friends ;numerical ;Likert scale:  1: very low and 5: very high
+predictor;Dalc ; workday alcohol consumption ;numerical ;Likert scale:  1: very low and 5: very high
+predictor;Walc ; weekend alcohol consumption ;numerical ;Likert scale:  1: very low and 5: very high
+predictor;health ; current health status ;numerical ;Likert scale:  1: very bad and 5: very good
+predictor;absences ; number of school absences ;numerical ;range: 0 to 93
