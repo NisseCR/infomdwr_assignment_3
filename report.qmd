@@ -61,16 +61,8 @@ Describe the data and use a visualization to support your story. (approx. one or
 
 TODO:
 - var table from csv
-- hists for each var (cat vs cont)
-- correlation w/ score (what vars are corr, predict outcome in feature selection)
 - mention prevention of "leakage" by only using `data_train` in EDA.
-- check for outliers?
 
-```{r}
-#| label: data type casting
-
-
-```
 
 ```{r}
 #| label: eda visualization
