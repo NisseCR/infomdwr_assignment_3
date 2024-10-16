@@ -16,7 +16,7 @@ format:
 ---
 
 ```{r}
-#| label: R packages
+#| label: Load dependencies
 #| echo: false
 #| warning: false
 #| message: false
@@ -29,18 +29,18 @@ library(ggplot2)
 library(caret)
 # Cross association
 library(GGally)
-# correlation graph
+# Correlation graph
 library(reshape2)
-
+# Missing data
 library(ggmice)
-
+# RF model
 library(randomForest)
-
+# Gridding of plots
 library(gridExtra)
 ```
 
 ```{r}
-#| label: data loading
+#| label: Load data
 #| echo: false
 
 data_train <- readRDS("data/train.rds") %>% as_tibble()
@@ -48,7 +48,7 @@ data_test <- readRDS("data/test.rds") %>% as_tibble()
 ```
 
 ```{r}
-#| label: setup
+#| label: Project setup
 #| echo: false
 
 # Set set for reproducibility
@@ -62,10 +62,13 @@ Describe the data and use a visualization to support your story. (approx. one or
 TODO:
 - var table from csv
 - mention prevention of "leakage" by only using `data_train` in EDA.
-
+- Look at head and tail of data (print as well?)
 
 ```{r}
-#| label: eda visualization
+#| label: EDA visualisation
+#| code-summary: "Create histograms"
+#| warning: false
+#| message: false
 
 # TODO add EDA plots.
 # TODO add variable table.
@@ -96,15 +99,23 @@ grid.arrange(
   nrow = 3
 )
 ```
+## Missing data
+```{r}
+#| label: Missing data
+#| code-fold: false
+#| code-summary: "Missing data"
 
-```{r missing}
-plot_pattern(data_train)
+anyNA(data_train)
 ```
 
-other could contain missing as well (disguised v=error)
+No NA's. We also checked for disguised missing, but found none <-- ***rewrite this bit***.
 
 
-```{r tile-cor}
+```{r}
+#| label: Correlation matrix
+#| echo: false
+#| warning: false
+#| message: false
 
 # select only numerical variables train dataset
 num_data <- dplyr::select_if(data_train, is.numeric)
@@ -140,7 +151,37 @@ cortile_c <- ggplot(melted_cormatrix_c, aes(y = Var2, x = Var1, fill = value))+
 
 print(cortile_c)
 ```
-The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection. 
+The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.
+
+# Data transformation and pre-processing
+
+Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.
+
+
+Why Likert scales can remain numerical:  source: [here](https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/).
+
+---
+
+In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints. To keep the models comparable to one another, predictor data is standardised for all the models by scaling the data prior to training process. That said, standardisation is applied separately to the `data_train` and `data_test` sets to prevent "data leakage", which would cause target information to be available during the training process whilst being unavailable when actually making predictions.
+
+```{r}
+#| label: preprocessing
+#| warning: false
+#| code-fold: false
+#| code-summary: "Preprocessing"
+
+# Cast variables to factor based on EDA.
+factorise <- c("Medu", "Fedu")
+data_train <- data_train %>% mutate_at(vars(factorise), as.factor) 
+data_test <- data_test %>% mutate_at(vars(factorise), as.factor) 
+
+# Scale the predictor data.
+data_train <- data_train %>%
+  mutate(across(.cols = !score & where(is.numeric), scale))
+
+data_test <- data_test %>%
+  mutate(across(where(is.numeric), scale))
+```
 
 
 
@@ -150,47 +191,22 @@ For this assignment, three models will be compared: a linear regression model wi
 
 The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error. The KNN model will be built using the tunelength parameter. By supplying a tunelength parameter, multiple k values will be used to compute KNN models. Of these multiple models, the model with the lowest mean squared error will be chosen as the final KNN model. Lastly the random forest model will be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the mean squared error will be the lowest. 
 
-# Data transformation and pre-processing
-
-Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.
-
-
-Why Likert scales can remain numerical:  source: [here](https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/).
-
-```{r}
-#| label: preprocessing
-
-# Cast variables to factor based on EDA
-factorise <- c("Medu", "Fedu")
-data_train <- data_train %>% mutate_at(vars(factorise), as.factor) 
-
-# Scaling should be done when using KNN (distance based algorithm),
-# since distance is sensitive to scale of variables: https://medium.com/codex/why-scaling-your-data-is-important-1aff95ca97a2
-# Scaling is done per data split (train and test) to prevent leakage.
-# Exclude outcome "score" during scaling due to immutable benchmark test data.
-# TODO scaling can also be done using caret functions as described here: https://rpubs.com/njvijay/16444
-data_train <- data_train %>%
-  mutate(across(.cols = !score & where(is.numeric), scale))
-
-data_test <- data_test %>%
-  mutate(across(where(is.numeric), scale))
-
-summary(data_train)
-```
-
 # Model creation
 We first set up the folds we want to use for the k-fold cross validation. We decided to set k to 10, thus, performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on around 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value 123 before each training algorithm. The seed guarantees that each algorithm is performed on the same data partitions. source: [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
 
 
 ```{r}
-#| label: train configuration
+#| label: Train configuration
+#| code-fold: false
+#| code-summary: "Train configuration"
 
 # Set up repeated k-fold cross-validation configuration.
 train_control <- trainControl(method = "cv", number = 10)
 ```
 
 ```{r}
-#| label: linear regression model
+#| label: Linear regression model
+#| code-summary: "Create linear regression model"
 
 # Set seed before initialising train_control to create consistent folds across
 # the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
@@ -209,7 +225,8 @@ model_lm <- train(
 
 
 ```{r}
-#| label: knn model
+#| label: KNN model
+#| code-summary: "Create KNN model"
 
 # Set seed before initialising train_control to create consistent folds across
 # the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
@@ -226,7 +243,8 @@ model_knn <- train(
 ```
 
 ```{r}
-#| label: random forest model
+#| label: Random forest model
+#| code-summary: "Create random forest model"
 
 # Set seed before initialising train_control to create consistent folds across
 # the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
@@ -248,7 +266,9 @@ model_rf <- train(
 Describe how you compare the methods and why. (approx. two or three paragraphs)
 
 ```{r}
-#| label: model comparison
+#| label: Model comparison
+#| code-fold: false
+#| code-summary: "Compare the models"
 
 # Resampling + comparison method taken from https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/
 results <- resamples(list(LM=model_lm, KNN=model_knn, RF=model_rf))
