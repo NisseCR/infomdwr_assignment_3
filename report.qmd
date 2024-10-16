@@ -38,6 +38,8 @@ library(ggmice)
 library(randomForest)
 # Gridding of plots
 library(gridExtra)
+# Make a nice looking table
+library(kableExtra)
 ```
 
 ```{r}
@@ -60,10 +62,32 @@ set.seed(123)
 
 Describe the data and use a visualization to support your story. (approx. one or two paragraphs)
 
-TODO:
-- var table from csv
+
+The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarizes information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
+
+```{r}
+#| code-summary: "Variable descriptions"
+
+descs <- read.csv("./data/variable_description.csv", header = TRUE, sep = ";") %>%
+  as_tibble()
+
+args <- c("striped", "scale_down", "hold_position", "repeat_header")
+
+kbl(descs, booktabs = T) %>%
+    kable_styling(latex_options = args) 
+
+```
+
+
+
+TODO maybe?:
 - mention prevention of "leakage" by only using `data_train` in EDA.
 - Look at head and tail of data (print as well?)
+
+
+Too many variables narrative main problems:
+- curse of dimentionality - distance for knn becomes less meaningful
+- overfitting because of many variables and not too many rows
 
 ```{r}
 #| label: EDA visualisation
