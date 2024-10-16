@@ -300,6 +300,19 @@ data.frame(
 )
 ```
 
+Finally, the data to calculate the expected mean square error is provided by using this model to make predictions on the test set `data_test`. These predictions are
+
+```{r}
+#| label: Predict test
+#| code-summary: "Make predictions on test data"
+
+# Make predictions
+predictions <- predict(model_rf, data_test)
+
+# Save predictions
+write_rds(predictions, "data/predictions.rds")
+```
+
 # Team member contributions
 
 Write down what each team member contributed to the project.
