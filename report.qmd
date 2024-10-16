@@ -13,6 +13,7 @@ format:
     self-contained: true
     code-fold: true
     df-print: kable
+bibliography: references.bib  
 ---
 
 ```{r}
@@ -108,7 +109,7 @@ grid.arrange(
 anyNA(data_train)
 ```
 
-No NA's. We also checked for disguised missing, but found none <-- ***rewrite this bit***.
+The dataset contains no missing data. Moreover, disguised missing values—such as `0`, `-999` or `"None"`—seems absent as well when investigating the data using the provided distributions for the predictor data.
 
 
 ```{r}
@@ -158,11 +159,11 @@ The correlation plots reveals relatively weak or lack of correlations between th
 Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.
 
 
-Why Likert scales can remain numerical:  source: [here](https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/).
+Why Likert scales can remain numerical:  source: [@stats_sol]
 
 ---
 
-In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints. To keep the models comparable to one another, predictor data is standardised for all the models by scaling the data prior to training process. That said, standardisation is applied separately to the `data_train` and `data_test` sets to prevent "data leakage", which would cause target information to be available during the training process whilst being unavailable when actually making predictions.
+In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate MSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the `data_train` and `data_test` sets to prevent "data leakage", which would cause target information to be available during the training process whilst being unavailable when actually making predictions.
 
 ```{r}
 #| label: preprocessing
@@ -187,12 +188,12 @@ data_test <- data_test %>%
 
 # Model description
 
-For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with custom k value, and a random forest model. These models will be compared by their performance metric mean squared error. To ensure fair comparison and gain the mean squared error for all models, they will all be cross-validated, even if it makes less sense for the model to do so. This is particularly the case for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison. 
+For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with a custom k-value, and a random forest model. K-fold cross validation will be used to ensure fair comparison between the models, whilst also providing an averaged Mean Squared Error (MSE) to facilitate this comparison. Thus, MSE is the performance metric of these models. It should be noted that models are cross validated even when it makes less sense for the model to do so. This is specifically true for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison. 
 
-The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error. The KNN model will be built using the tunelength parameter. By supplying a tunelength parameter, multiple k values will be used to compute KNN models. Of these multiple models, the model with the lowest mean squared error will be chosen as the final KNN model. Lastly the random forest model will be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the mean squared error will be the lowest. 
+The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model by taking into account the model complexity. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error that includes a penalty for using more parameters / predictors. The KNN model will be built using the `tunelength` parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average MSE over all the cross validation folds will be chosen as the final model. Lastly the random forest model will also be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the MSE will be the lowest. 
 
 # Model creation
-We first set up the folds we want to use for the k-fold cross validation. We decided to set k to 10, thus, performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on around 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value 123 before each training algorithm. The seed guarantees that each algorithm is performed on the same data partitions. source: [here](https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/).
+We first set up the folds we want to use for the k-fold cross validation. We decided to set `k` to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value `123` before each training algorithm. The seed guarantees that the algorithm is performed on the same data partitions between each model [@Brownlee_2019].
 
 
 ```{r}
@@ -300,7 +301,7 @@ data.frame(
 )
 ```
 
-Finally, the data to calculate the expected mean square error is provided by using this model to make predictions on the test set `data_test`. These predictions are
+Finally, the data to calculate the expected mean squared error is provided by using this model to make predictions on the test set `data_test`. These predictions are
 
 ```{r}
 #| label: Predict test
@@ -320,3 +321,7 @@ Write down what each team member contributed to the project.
 - Author One: a, b, c
 - Author Two: b, c, d
 - Author Three: a, b, d
+
+# References
+
+<div id="refs"></div>

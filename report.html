@@ -59,7 +59,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}</style>
 
 
 <script>/*!
@@ -3090,13 +3110,17 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#data-description" id="toc-data-description" class="nav-link active" data-scroll-target="#data-description">Data description</a></li>
+  <li><a href="#data-description" id="toc-data-description" class="nav-link active" data-scroll-target="#data-description">Data description</a>
+  <ul class="collapse">
+  <li><a href="#missing-data" id="toc-missing-data" class="nav-link" data-scroll-target="#missing-data">Missing data</a></li>
+  </ul></li>
   <li><a href="#data-transformation-and-pre-processing" id="toc-data-transformation-and-pre-processing" class="nav-link" data-scroll-target="#data-transformation-and-pre-processing">Data transformation and pre-processing</a></li>
   <li><a href="#model-description" id="toc-model-description" class="nav-link" data-scroll-target="#model-description">Model description</a></li>
   <li><a href="#model-creation" id="toc-model-creation" class="nav-link" data-scroll-target="#model-creation">Model creation</a></li>
   <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison">Model comparison</a></li>
   <li><a href="#chosen-model" id="toc-chosen-model" class="nav-link" data-scroll-target="#chosen-model">Chosen model</a></li>
   <li><a href="#team-member-contributions" id="toc-team-member-contributions" class="nav-link" data-scroll-target="#team-member-contributions">Team member contributions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
 </div>
@@ -3181,13 +3205,15 @@ vertical-align: -.125em;
 </div>
 </div>
 </div>
+<section id="missing-data" class="level2">
+<h2 class="anchored" data-anchor-id="missing-data">Missing data</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anyNA</span>(data_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
 </div>
-<p>other could contain missing as well (disguised v=error)</p>
+<p>The dataset contains no missing data. Moreover, disguised missing values—such as <code>0</code>, <code>-999</code> or <code>&quot;None&quot;</code>—seems absent as well when investigating the data using the provided distributions for the predictor data.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -3199,12 +3225,13 @@ vertical-align: -.125em;
 </div>
 <p>The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.</p>
 </section>
+</section>
 <section id="data-transformation-and-pre-processing" class="level1">
 <h1>Data transformation and pre-processing</h1>
 <p>Describe additional pre-processing steps you have used, if any (e.g., dealing with categorical data, scaling). If you do not do any pre-processing, you can leave this section out.</p>
-<p>Why Likert scales can remain numerical: source: <a href="https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/">here</a>.</p>
+<p>Why Likert scales can remain numerical: source: <span class="citation" data-cites="stats_sol">(<a href="#ref-stats_sol" role="doc-biblioref">2022</a>)</span></p>
 <hr>
-<p>In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints. To keep the models comparable to one another, predictor data is standardised for all the models by scaling the data prior to training process. That said, standardisation is applied separately to the <code>data_train</code> and <code>data_test</code> sets to prevent “data leakage”, which would cause target information to be available during the training process whilst being unavailable when actually making predictions.</p>
+<p>In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate MSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the <code>data_train</code> and <code>data_test</code> sets to prevent “data leakage”, which would cause target information to be available during the training process whilst being unavailable when actually making predictions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cast variables to factor based on EDA.</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>factorise <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Medu&quot;</span>, <span class="st">&quot;Fedu&quot;</span>)</span>
@@ -3226,7 +3253,7 @@ vertical-align: -.125em;
 </section>
 <section id="model-creation" class="level1">
 <h1>Model creation</h1>
-<p>We first set up the folds we want to use for the k-fold cross validation. We decided to set k to 10, thus, performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on around 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value 123 before each training algorithm. The seed guarantees that each algorithm is performed on the same data partitions. source: <a href="https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/">here</a>.</p>
+<p>We first set up the folds we want to use for the k-fold cross validation. We decided to set k to 10, thus, performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on around 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value 123 before each training algorithm. The seed guarantees that each algorithm is performed on the same data partitions <span class="citation" data-cites="Brownlee_2019">(<a href="#ref-Brownlee_2019" role="doc-biblioref">Brownlee 2019</a>)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up repeated k-fold cross-validation configuration.</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>train_control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3498,6 +3525,17 @@ This message is displayed once per session.</code></pre>
 </div>
 </div>
 </div>
+<p>Finally, the data to calculate the expected mean square error is provided by using this model to make predictions on the test set <code>data_test</code>. These predictions are</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Make predictions on test data</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_rf, data_test)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Save predictions</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(predictions, <span class="st">&quot;data/predictions.rds&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 </section>
 <section id="team-member-contributions" class="level1">
 <h1>Team member contributions</h1>
@@ -3507,6 +3545,17 @@ This message is displayed once per session.</code></pre>
 <li>Author Two: b, c, d</li>
 <li>Author Three: a, b, d</li>
 </ul>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-stats_sol" class="csl-entry" role="listitem">
+2022. <em>Statistics Solutions</em>. <a href="https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/">https://www.statisticssolutions.com/can-an-ordinal-likert-scale-be-a-continuous-variable/</a>.
+</div>
+<div id="ref-Brownlee_2019" class="csl-entry" role="listitem">
+Brownlee, Jason. 2019. <span>“Compare Models and Select the Best Using the Caret r Package.”</span> <em>MachineLearningMastery.com</em>. <a href="https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/">https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/</a>.
+</div>
+</div>
 </section>
 
 </main>
