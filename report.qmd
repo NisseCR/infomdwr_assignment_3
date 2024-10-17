@@ -242,15 +242,26 @@ data_test <- data_test %>%
 
 
 
-# Model description
+# Modelling and comparison strategy 
 
-For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with a custom k-value, and a random forest model. K-fold cross validation will be used to ensure fair comparison between the models, whilst also providing an averaged Mean Squared Error (MSE) to facilitate this comparison. Thus, MSE is the performance metric of these models. It should be noted that models are cross validated even when it makes less sense for the model to do so. This is specifically true for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison. 
+For this assignment, three models will be compared: a linear regression model with automatic feature selection, a KNN model with a custom k-value, and a random forest model. All models will be train on the train data within k-fold cross validation to reduce the chances of overfitting.
 
-The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model by taking into account the model complexity. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error that includes a penalty for using more parameters / predictors. The KNN model will be built using the `tunelength` parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average MSE over all the cross validation folds will be chosen as the final model. Lastly the random forest model will also be cross validated, as mentioned before. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the MSE will be the lowest. 
+## Linear regression
+The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model by taking into account the model complexity. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error that includes a penalty for using more parameters / predictors. Backwards stepwise feature selection is an algorithm that starts the modeling with all features included in the formula. Then it removes a single feature that leads to the largest AIC reduction in each step. When no AIC reduction can be achived, the current model is chosen as the best one. The backwards selection is chosen, as opposed to best-subset or forward selection, because the former is computationally expensive and the latter may not arrive at the optimal model. 
+
+## KNN model
+The tuning the number of nearest neighbors - k allows for the KNN model to optimize the bias and variance tradeoff. To do so, the KNN model will be built using the `tunelength` parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average MSE over all the cross validation folds will be chosen as the final model. 
+
+## Random forest
+The random forest model already tries to minimize overfitting in the building process by sampling both data points and features across different trees and averaging the results. However, it will also be k-fold cross validated, as mentioned before. While this step is not necessary for reducing the variance of the model, it is required for fair comparison across all of the trained models. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the MSE will be the lowest. 
+
+## Comparison 
+The comparison of the models will be based on their performance in the K-fold cross validation. K-fold was chosen as opposed to a train and validation data split, as it reduces the chance that one of the models performed particularly well because a the validation data was particularly well suited for it, but performance on other splits would be much worse. In other words, it is a better guarantee of not overfitting the models and identifying ones who's performance is consistently good. To facilitate this comparison, the Mean Squared Error (MSE) was chosen as the the main performance metric. For MSE scores to be a fair comparison metric, the models have to be trained and tested on folds consisting of the same data points. That is the reson the random forest model will also be included in the K-fold procedure. To guarantee the algorithm is performed on the same data partitions between each model, the seed can be set right before each of the cross-validation processes [@Brownlee_2019].
+
 
 # Model creation
-We first set up the folds we want to use for the k-fold cross validation. We decided to set `k` to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value `123` before each training algorithm. The seed guarantees that the algorithm is performed on the same data partitions between each model [@Brownlee_2019].
 
+This section contains the code used to train and k-fold cross-validate the chosen models. We first set up the folds we want to use for the k-fold cross validation. We decided to set `k` to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value `123` before each training algorithm. 
 
 ```{r}
 #| label: Train configuration
@@ -265,18 +276,17 @@ train_control <- trainControl(method = "cv", number = 10)
 #| label: Linear regression model
 #| code-summary: "Create linear regression model"
 
-# Set seed before initialising train_control to create consistent folds across
-# the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
+# Set seed before initialising train_control to create consistent folds across models
 set.seed(123)
 
 # Create the linear regression model.
 model_lm <- train(
-  score ~ .,
+  score ~ ., # specifying the initial formula: score predicted by all other variables, no interaction terms
   data = data_train,
-  method = "lmStepAIC",
+  method = "lmStepAIC",  # linear regression with step feature selection based on AIC 
   trace = FALSE, 
-  direction = "backward",
-  trControl = train_control,
+  direction = "backward", # specifying backwards feature selection
+  trControl = train_control, # cross validation configuration 
 )
 ```
 
@@ -285,13 +295,12 @@ model_lm <- train(
 #| label: KNN model
 #| code-summary: "Create KNN model"
 
-# Set seed before initialising train_control to create consistent folds across
-# the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
+# Set seed before initialising train_control to create consistent folds across models
 set.seed(123)
 
 # Create the KNN model.
 model_knn <- train(
-  score ~ .,  
+  score ~ .,  # specifying the initial formula: score predicted by all other variables
   data = data_train,
   method = "knn",
   tuneLength = 10, 
@@ -303,8 +312,7 @@ model_knn <- train(
 #| label: Random forest model
 #| code-summary: "Create random forest model"
 
-# Set seed before initialising train_control to create consistent folds across
-# the models (https://stackoverflow.com/questions/52622811/does-using-the-same-traincontrol-object-for-cross-validation-when-training-multi).
+# Set seed before initialising train_control to create consistent folds across models
 set.seed(123)
 
 # Create the random forest model.
@@ -370,9 +378,12 @@ write_rds(predictions, "data/predictions.rds")
 
 Write down what each team member contributed to the project.
 
-- Author One: a, b, c
-- Author Two: b, c, d
-- Author Three: a, b, d
+- Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy 
+- Isabelle de Wolf: contribution to collaborative discussion on the modeling and comparison strategy 
+- Agnieszka Kubica: contribution to collaborative discussion on the modeling and comparison strategy, analysis of variable types, creation of the variable table,description of bar plots in EDA. creation and description of the correlation plot, prepossessing decisions, part of the model creation description, description of the comparison strategy, justification of casting data types in the pre-processing 
+- Sara Sakhi: contribution to collaborative discussion on the modeling and comparison strategy 
+- Celis Tittse: contribution to collaborative discussion on the modeling and comparison strategy 
+
 
 # References
 
