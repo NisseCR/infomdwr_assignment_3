@@ -320,7 +320,13 @@ model_rf <- train(
 
 # Model comparison
 
-Describe how you compare the methods and why. (approx. two or three paragraphs)
+In this study, we compared the performance of three different supervised learning models: Linear Regression with stepwise feature selection, K-Nearest Neighbours (KNN), and Random Forest. To ensure fair and robust comparisons, we used 10-fold cross-validation across all models. This technique helps avoid overfitting by training the models on different data splits and validating them on unseen partitions. 
+
+From the boxplot visualization, we can see that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with a median value of approximately 0.62. KNN also performed relatively well, with a median MAE around 0.66, but showed slightly more variance. Linear Regression (LM) had the highest median MAE at 0.75, indicating that it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest median RMSE of approximately 0.83, followed by KNN at 0.85, and Linear Regression (LM) with the highest RMSE at 0.91. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a median R-squared of 0.23, indicating that it explains the highest proportion of variance in the target variable. KNN had a median R-squared of 0.16, while Linear Regression (LM) had the lowest at 0.07, suggesting that it explains the least amount of variance in the data.
+
+The cross-validation results clearly show that the Random Forest model achieved the lowest average MAE, making it the best-performing model. The KNN model came in second, while Linear Regression had the highest MAE, indicating it performed worse compared to the other models. These results are visually summarized in the boxplots and dot plots shown below, where you can observe the MAE distribution across the folds for each model.
+
+The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model's simplicity might have limited its ability to handle the complex feature interactions present in the data.
 
 ```{r}
 #| label: Model comparison
@@ -340,27 +346,17 @@ head(results$values)
 # TODO Maybe also consider variable importance, might have surprising insights?
 # e.g. varImp(model_knn, scale=FALSE) (code doesn't work yet)
 
-#Sara is working
 ```
 
 # Chosen model
 
-Show which method is best and why. (approx. one paragraph) You are welcome to use tables and plots!
+After thoroughly comparing the performance of all three models, we have selected Random Forest as the final model. The cross-validation results showed that Random Forest consistently achieved the best performance in terms of both accuracy (MAE and RMSE) and the ability to explain variance in the data (R-squared).
+Random Forest’s ensemble learning approach, which aggregates multiple decision trees, allows it to handle complex interactions between variables and reduce overfitting, making it particularly well-suited for this task. Although KNN also showed competitive performance, the lower variability and superior accuracy of Random Forest make it the most reliable choice.
+
+Having chosen the random forest model, predictions were made on the test data using the code below. They have been saved in the `predictions.rds` file. 
 
 ```{r}
-#| label: table example
-data.frame(
-  model       = c("Cool model 1", "Cool model 2"),
-  performance = c(1.2, 1.8),
-  other       = c(0.5, 0.3),
-  notes       = c("Some note", "another note")
-)
-```
-
-Finally, the data to calculate the expected mean squared error is provided by using this model to make predictions on the test set `data_test`. These predictions are
-
-```{r}
-#| label: Predict test
+#| label: Prediction test data
 #| code-summary: "Make predictions on test data"
 
 # Make predictions
