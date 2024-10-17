@@ -63,7 +63,7 @@ set.seed(123)
 Describe the data and use a visualization to support your story. (approx. one or two paragraphs)
 
 
-The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarizes information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
+The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarizes information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
 
 ```{r}
 #| code-summary: "Variable descriptions"
@@ -79,25 +79,15 @@ kbl(descs, booktabs = T) %>%
 ```
 
 
-
-TODO maybe?:
-- mention prevention of "leakage" by only using `data_train` in EDA.
-- Look at head and tail of data (print as well?)
-
-
-Too many variables narrative main problems:
+TODO: Too many variables narrative main problems:
 - curse of dimentionality - distance for knn becomes less meaningful
 - overfitting because of many variables and not too many rows
 
 ```{r}
-#| label: EDA visualisation
+#| label: EDA visualisation histogram
 #| code-summary: "Create histograms"
 #| warning: false
 #| message: false
-
-# TODO add EDA plots.
-# TODO add variable table.
-# TODO consider using few of points from Peng's list (slide) e.g. checking "n's".
 
 make_hist <- function(col) {
   ggplot(data_train, aes_string(x = col)) +
@@ -124,6 +114,48 @@ grid.arrange(
   nrow = 3
 )
 ```
+
+```{r}
+#| label: EDA visualisation barplot
+#| code-summary: "Create barplots"
+#| warning: false
+#| message: false
+
+make_bar <- function(col) {
+   ggplot(data_train, aes(x = fct_infreq(as.factor(data_train[[col]])))) +
+    geom_bar(width = 0.8) +
+    theme_minimal() +
+    xlab(col) +
+    coord_flip() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.3)))
+    
+}
+
+
+grid.arrange(
+  make_bar("school"),
+  make_bar("sex"),
+  make_bar("address"),
+  make_bar("famsize"),
+  make_bar("Pstatus"),
+  make_bar("Mjob"),
+  make_bar("Fjob"),
+  make_bar("reason"),
+  make_bar("guardian"),
+  make_bar("schoolsup"),
+  make_bar("famsup"),
+  make_bar("paid"),
+  make_bar("activities"),
+  make_bar("nursery"),
+  make_bar("higher"),
+  make_bar("internet"),
+  make_bar("romantic"), 
+  nrow = 4
+)
+```
+Looking at the variables, non really stand out. numerical variables are a bit skewed, but this might be due to the variable descriptions. For the categorical ones, some of them seemed a bit skewed as well, but no obvious flaws or errors. There does not seem to be any intentionally disguised missing data. 
+
 ## Missing data
 ```{r}
 #| label: Missing data
