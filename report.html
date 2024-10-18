@@ -3776,11 +3776,7 @@ border: 0;
 </section>
 <section id="comparison" class="level2">
 <h2 class="anchored" data-anchor-id="comparison">Comparison</h2>
-<ul>
-<li><p>validation advantages K-fold cross validation will be used to ensure fair comparison between the models, whilst also providing an averaged Mean Squared Error (MSE) to facilitate this comparison. Thus, MSE is the performance metric of these models. It should be noted that models are cross validated even when it makes less sense for the model to do so. This is specifically true for the random forest model, as this model already tries to minimize overfitting in the building process. However, applying cross-validation to this model will yield validation results in a similar format as the other models, thus allowing for easier comparison.</p></li>
-<li><p>describe how we compare the models and why (cross validation advantages vs test-validation, having the same exact data - seed)</p></li>
-</ul>
-<p>The seed guarantees that the algorithm is performed on the same data partitions between each model <span class="citation" data-cites="Brownlee_2019">(<a href="#ref-Brownlee_2019" role="doc-biblioref">Brownlee 2019</a>)</span>.</p>
+<p>The comparison of the models will be based on their performance in the K-fold cross validation. K-fold was chosen as opposed to a train and validation data split, as it reduces the chance that one of the models performed particularly well because a the validation data was particularly well suited for it, but performance on other splits would be much worse. In other words, it is a better guarantee of not overfitting the models and identifying ones who’s performance is consistently good. To facilitate this comparison, the Mean Squared Error (MSE) was chosen as the the main performance metric. For MSE scores to be a fair comparison metric, the models have to be trained and tested on folds consisting of the same data points. That is the reson the random forest model will also be included in the K-fold procedure. To guarantee the algorithm is performed on the same data partitions between each model, the seed can be set right before each of the cross-validation processes <span class="citation" data-cites="Brownlee_2019">(<a href="#ref-Brownlee_2019" role="doc-biblioref">Brownlee 2019</a>)</span>.</p>
 </section>
 </section>
 <section id="model-creation" class="level1">

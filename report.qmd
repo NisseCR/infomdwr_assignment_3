@@ -60,8 +60,11 @@ set.seed(123)
 
 # Data description
 
-Describe the data and use a visualization to support your story. (approx. one or two paragraphs)
+The dataset consist of records from two Portuguese high schools and includes both student marks on a mathematics course and a questionnaire concerned with the background of students, their personal life, and their study habits. The original dataset studied by Paulo Cortez and Alice Silva (2008) also included the performance of a Portuguese course with an additional 649 observations. They did research on the influence of the demographical, social, and school-related factors on students' performance. However, this will not be included in this prediction. 
 
+They used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis (Cortez and Silva, 2008, p.12). We will replicate their findings with linear regression, k-nearest neighboures, and Random Forest. To this end, we intend to find the best performing prediction for mathematical scores model on our test set. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset, with an hypothesis that non-linear function models will perform well (idem, p.12).    
+
+Furthermore, due to the high dimensionality (31 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (k-NN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. Feature selection is crucial to mitigate these issues and improve model performance.
 
 The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarizes information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
 
@@ -290,6 +293,7 @@ model_lm <- train(
 )
 ```
 
+The k-NN model has little hyperparameters. Besides the implimentation of cross-validation, the k-NN model will select the score of its closest neighest neighboures based on the variables in the dataset. This method will be applied for k=5 to k=23. We wanted to select 10 different k's, and thus set the tune length to 10.
 
 ```{r}
 #| label: KNN model
