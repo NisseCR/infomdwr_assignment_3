@@ -228,7 +228,7 @@ The dataset contains no missing data. Moreover, disguised missing values—such 
 
 # Data transformation and pre-processing
 
-In the EDA it has been discovered that some of the variables are not necessarily correctly labeled as numerical. Particularly, `Medu`, `Fedu` and  a variety of "numerical" variables using 5 point Likert scales are ordinal variables. That is because the the distance between each of their categories is not meaningful. However, studies have shown that ordinal variables with 5 or more categories, particularly in case of Likert scales, "ordinal approximation of a continuous variable"  does not negatively impact the analysis [Statistics Solutions, @stats_sol]. Effectively, the variables can be treated as continuous in the modelling process. A decision is made to leave the Likert scale variables as numerical. However, `Fedu` and `Medu` are cast to ordered factors and are not being approximated as continuous. Because the 5th category: `None` education being very small and possibly including disguised missing data, the minimal number of categories may be questioned. Additionally, the distances between different levels of education are likely less meaningful than in case of the Likert scales. 
+In the EDA it has been discovered that some of the variables are not necessarily correctly labeled as numerical. Particularly, `Medu`, `Fedu`, `studytime`, `traveltime` and a variety of "numerical" variables using 5 point Likert scales are ordinal variables. That is because the the distance between each of their categories is not meaningful. However, studies have shown that for ordinal variables with 5 or more categories "ordinal approximation of a continuous variable"  does not negatively impact the analysis [Statistics Solutions, @stats_sol]. Effectively, the variables can be treated as continuous in the modelling process without negative consequences for the analysis. A decision is made to leave `Medu`, `Fedu` and the 5 point Likert scale variables as numerical. However, `studytime` and `traveltime` who have only 4 categories are cast to ordered factors and are not being approximated as continuous. 
 
 In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate RMSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the `data_train` and `data_test` sets to prevent "data leakage", which would cause target information to be available during the training process whilst being unavailable when actually making predictions.
 
@@ -353,6 +353,7 @@ Resampling the model results per fold gives insight into the variation of the mo
 # Resampling + comparison method taken from https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/
 results <- resamples(list(LM=model_lm, KNN=model_knn, RF=model_rf))
 bwplot(results)
+
 ```
 
 Finally, the average MSE, MAE and R-squared metrics were gathered by looking at their respective average values per model.
@@ -362,11 +363,14 @@ Finally, the average MSE, MAE and R-squared metrics were gathered by looking at 
 #| code-summary: "Summarise model performance metrics"
 
 # Data taken from individual model statistics over the k-folded results (e.g. average RMSE).
+# Data can be accessed by running the following code:
+# summary(results)
+
 models <- data.frame(
   model       = c("LM", "KNN", "RF"),
-  RMSE        = c(0.93, 0.92, 0.86),
-  MAE         = c(0.75, 0.71, 0.67),
-  Rsquared    = c(0.16, 0.17, 0.26)
+  RMSE        = c(0.92, 0.91, 0.87),
+  MAE         = c(0.74, 0.72, 0.67),
+  Rsquared    = c(0.18, 0.17, 0.25)
 )
 
 kbl(models, booktabs = T) %>%
@@ -375,12 +379,12 @@ kbl(models, booktabs = T) %>%
 
 Using the above data, the performance of three different supervised learning models were compared: Linear Regression with stepwise feature selection, K-Nearest Neighbours (KNN), and Random Forest. To ensure fair and robust comparisons, 10-fold cross-validation was utilised across all models. This technique helps avoid overfitting by training the models on different data splits and validating them on unseen partitions. 
 
-From the boxplot visualisation and summary table, it was observed that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with an average value of approximately 0.67. KNN also performed relatively well, with an average MAE of 0.71, but showed slightly more variance. Linear Regression (LM) had the highest average MAE at 0.75, indicating that it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest average RMSE of approximately 0.86, followed by KNN at 0.92, and Linear Regression (LM) with the highest RMSE at 0.93. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a average R-squared of 0.26, indicating that it explains the highest proportion of variance in the target variable. KNN had an average R-squared of 0.17, while Linear Regression (LM) had the lowest at 0.16, suggesting that it explains the least amount of variance in the data.
+From the boxplot visualisation and summary table, it was observed that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with an average value of approximately 0.67. KNN also performed relatively well, with an average MAE of 0.72. Linear Regression (LM) had the highest average MAE at 0.74 and exhibited a significantly larger variance, indicating that on average it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest average RMSE of approximately 0.87, followed by KNN at 0.91, and Linear Regression (LM) with the highest RMSE at 0.92. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a average R-squared of 0.25, indicating that it explains the highest proportion of variance in the target variable. Linear Regression (LM)  had an average R-squared of 0.17, while KNN had the lowest at 0.18, suggesting that it explains the least amount of variance in the data.
 
 The cross-validation results clearly show that the Random Forest model achieved the lowest average RMSE, making it the best-performing model. The KNN model came in second, while Linear Regression had the highest RMSE, indicating it performed worse compared to the other models. These results are visually summarised in the boxplot, where the RMSE and MAE distributions of each model across the folds can be observed.
 
 
-The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model's simplicity might have limited its ability to handle the complex feature interactions present in the data.
+The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model's simplicity and assumptions of linear relationships between the variables might have limited its ability to handle the complex feature interactions present in the data.
 
 # Chosen model
 
