@@ -3397,9 +3397,9 @@ border: 0;
 <section id="data-description" class="level1">
 <h1>Data description</h1>
 <p>The dataset consist of records from two Portuguese high schools and includes both student marks on a mathematics course and a questionnaire concerned with the background of students, their personal life, and their study habits. The original dataset studied by Paulo Cortez and Alice Silva (2008) also included the performance of a Portuguese course with an additional 649 observations. They did research on the influence of the demographical, social, and school-related factors on students’ performance. However, this will not be included in this prediction.</p>
-<p>They used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis (Cortez and Silva, 2008, p.12). We will replicate their findings with linear regression, k-nearest neighboures, and Random Forest. To this end, we intend to find the best performing prediction for mathematical scores model on our test set. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset, with an hypothesis that non-linear function models will perform well (idem, p.12).</p>
-<p>Furthermore, due to the high dimensionality (31 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (KNN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data. Feature selection is crucial to mitigate these issues and improve model performance.</p>
-<p>The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable <code>score</code> and 30 predictor variables. The table below summarizes information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality. Additionally, <code>Medu</code> and <code>Fedu</code> are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.</p>
+<p>They used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis (Cortez and Silva, 2008, p.12). This study will replicate their findings with linear regression, k-nearest neighboures, and Random Forest, with the intention to find the best performing prediction for mathematical scores model on the test set. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset, with an hypothesis that non-linear function models will perform well (idem, p.12).</p>
+<p>Furthermore,the high dimensionality (30 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (KNN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data. Feature selection is crucial to mitigate these issues and improve model performance.</p>
+<p>The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable <code>score</code> and 30 predictor variables. The table below summarises information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality. Additionally, <code>Medu</code> and <code>Fedu</code> are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Variable descriptions</summary>
@@ -3737,7 +3737,7 @@ border: 0;
 </div>
 </div>
 </div>
-<p>Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it’s doubtful wheter they actually represent numerical values, as they seem more like ordered variables. Perhaps it would be best to cast <code>Medu</code> and <code>Fedu</code> to categorical variables for this reason. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.</p>
+<p>Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it’s doubtful whether they actually represent numerical values, as they seem more like ordered variables. Perhaps it would be best to cast <code>Medu</code> and <code>Fedu</code> to categorical variables for this reason. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -3747,7 +3747,7 @@ border: 0;
 </div>
 </div>
 </div>
-<p>The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.</p>
+<p>The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables <code>absences</code>, <code>freetime</code> and <code>famrel</code> reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.</p>
 </section>
 <section id="missing-data" class="level2">
 <h2 class="anchored" data-anchor-id="missing-data">Missing data</h2>
@@ -3757,14 +3757,13 @@ border: 0;
 <pre><code>[1] FALSE</code></pre>
 </div>
 </div>
-<p>The dataset contains no missing data. Moreover, disguised missing values—such as <code>0</code>, <code>-999</code> or <code>&quot;None&quot;</code>—seems absent as well when investigating the data using the provided distributions for the predictor data. The only exception if <code>Medu</code> and <code>Fedu</code>, where there is a small number of <code>None</code> entries, that could represent no education or missing values. However, the proper representation is assumed.</p>
+<p>The dataset contains no missing data. Moreover, disguised missing values—such as <code>0</code>, <code>-999</code> or <code>&quot;None&quot;</code>—seems absent as well when investigating the data using the provided distributions for the predictor data. The only exception is <code>Medu</code> and <code>Fedu</code>, where there is a small number of <code>None</code> entries, that could represent no education or missing values. However, the proper representation is assumed.</p>
 </section>
 </section>
 <section id="data-transformation-and-pre-processing" class="level1">
 <h1>Data transformation and pre-processing</h1>
 <p>In the EDA it has been discovered that some of the variables are not necessarily correctly labeled as numerical. Particularly, <code>Medu</code>, <code>Fedu</code> and a variety of “numerical” variables using 5 point Likert scales are ordinal variables. That is because the the distance between each of their categories is not meaningful. However, studies have shown that ordinal variables with 5 or more categories, particularly in case of Likert scales, “ordinal approximation of a continuous variable” does not negatively impact the analysis <span class="citation" data-cites="stats_sol">(Statistics Solutions, <a href="#ref-stats_sol" role="doc-biblioref">2022</a>)</span>. Effectively, the variables can be treated as continuous in the modelling process. A decision is made to leave the Likert scale variables as numerical. However, <code>Fedu</code> and <code>Medu</code> are cast to ordered factors and are not being approximated as continuous. Because the 5th category: <code>None</code> education being very small and possibly including disguised missing data, the minimal number of categories may be questioned. Additionally, the distances between different levels of education are likely less meaningful than in case of the Likert scales.</p>
-<hr>
-<p>In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate MSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the <code>data_train</code> and <code>data_test</code> sets to prevent “data leakage”, which would cause target information to be available during the training process whilst being unavailable when actually making predictions.</p>
+<p>In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate RMSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the <code>data_train</code> and <code>data_test</code> sets to prevent “data leakage”, which would cause target information to be available during the training process whilst being unavailable when actually making predictions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cast variables to factor based on EDA.</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>factorise <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Medu&quot;</span>, <span class="st">&quot;Fedu&quot;</span>)</span>
@@ -3788,20 +3787,22 @@ border: 0;
 </section>
 <section id="knn-model" class="level2">
 <h2 class="anchored" data-anchor-id="knn-model">KNN model</h2>
-<p>The tuning the number of nearest neighbors - k allows for the KNN model to optimize the bias and variance tradeoff. To do so, the KNN model will be built using the <code>tunelength</code> parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average MSE over all the cross validation folds will be chosen as the final model.</p>
+<p>Tuning the number of nearest neighbors (<code>k</code>) allows for the KNN model to optimize the bias and variance tradeoff. To do so, the KNN model will be built using the <code>tunelength</code> parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average RMSE over all the cross validation folds will be chosen as the final model.</p>
 </section>
 <section id="random-forest" class="level2">
 <h2 class="anchored" data-anchor-id="random-forest">Random forest</h2>
-<p>The random forest model already tries to minimize overfitting in the building process by sampling both data points and features across different trees and averaging the results. However, it will also be k-fold cross validated, as mentioned before. While this step is not necessary for reducing the variance of the model, it is required for fair comparison across all of the trained models. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the MSE will be the lowest.</p>
+<p>The random forest model already tries to minimize overfitting in the building process by sampling both data points and features across different trees and averaging the results. However, it will also be k-fold cross validated, as mentioned before. While this step is not necessary for reducing the variance of the model, it is required for fair comparison across all of the trained models. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the RMSE will be the lowest.</p>
 </section>
 <section id="comparison" class="level2">
 <h2 class="anchored" data-anchor-id="comparison">Comparison</h2>
-<p>The comparison of the models will be based on their performance in the K-fold cross validation. K-fold was chosen as opposed to a train and validation data split, as it reduces the chance that one of the models performed particularly well because a the validation data was particularly well suited for it, but performance on other splits would be much worse. In other words, it is a better guarantee of not overfitting the models and identifying ones who’s performance is consistently good. To facilitate this comparison, the Mean Squared Error (MSE) was chosen as the the main performance metric. For MSE scores to be a fair comparison metric, the models have to be trained and tested on folds consisting of the same data points. That is the reson the random forest model will also be included in the K-fold procedure. To guarantee the algorithm is performed on the same data partitions between each model, the seed can be set right before each of the cross-validation processes <span class="citation" data-cites="Brownlee_2019">(<a href="#ref-Brownlee_2019" role="doc-biblioref">Brownlee 2019</a>)</span>.</p>
+<p>The comparison of the models will be based on their performance in the K-fold cross validation. K-fold was chosen as opposed to a train and validation data split, as it reduces the chance that one of the models performed particularly well because a the validation data was particularly well suited for it, but performance on other splits would be much worse. In other words, it is a better guarantee of not overfitting the models and identifying ones who’s performance is consistently good. To facilitate this comparison, the Root Mean Squared Error (RMSE) was chosen as the the main performance metric. For RMSE scores to be a fair comparison metric, the models have to be trained and tested on folds consisting of the same data points. That is the reason the random forest model will also be included in the K-fold procedure. To guarantee the algorithm is performed on the same data partitions between each model, the seed can be set right before each of the cross-validation processes <span class="citation" data-cites="Brownlee_2019">(<a href="#ref-Brownlee_2019" role="doc-biblioref">Brownlee 2019</a>)</span>.</p>
 </section>
 </section>
 <section id="model-creation" class="level1">
 <h1>Model creation</h1>
-<p>This section contains the code used to train and k-fold cross-validate the chosen models. We first set up the folds we want to use for the k-fold cross validation. We decided to set <code>k</code> to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value <code>123</code> before each training algorithm.</p>
+<p>The training controle is a cross-validation k-fold method. The configuration is initialised with the number of folds (<code>k</code>) set to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. It was found that this data ratio was sufficient. To ensure comparability of the model performance, the seed was set to value <code>123</code> before each training algorithm.</p>
+<p>The LmStepAIC is explained earlier in the modelling strategy section. Furthermore, only the final model is of interest, thus the <code>trace</code> parameter is set to <code>False</code> within the <code>train()</code> function. The LM with all the variables has a high complexity in this model, and this method reduces the complexity by removing the variables with low impact (based on AIC). Backwards direction was chosen to reduce a complex model to a simpler model.</p>
+<p>The KNN model has little hyperparameters. Besides the implementation of cross-validation, the KNN model will select the score of its closest neighest neighboures based on the variables in the dataset. This method will be applied for to <code>k</code> values 5 to 23, with increments of 2, thus creating 10 <code>k</code> instances er per the <code>tuneLength</code> parameter that was set to 10.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up repeated k-fold cross-validation configuration.</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>train_control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3823,7 +3824,6 @@ border: 0;
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>The k-NN model has little hyperparameters. Besides the implimentation of cross-validation, the k-NN model will select the score of its closest neighest neighboures based on the variables in the dataset. This method will be applied for k=5 to k=23. We wanted to select 10 different k’s, and thus set the tune length to 10.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Create KNN model</summary>
@@ -3858,50 +3858,14 @@ border: 0;
 </section>
 <section id="model-comparison" class="level1">
 <h1>Model comparison</h1>
-<p>In this study, we compared the performance of three different supervised learning models: Linear Regression with stepwise feature selection, K-Nearest Neighbours (KNN), and Random Forest. To ensure fair and robust comparisons, we used 10-fold cross-validation across all models. This technique helps avoid overfitting by training the models on different data splits and validating them on unseen partitions.</p>
-<p>From the boxplot visualization, we can see that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with a median value of approximately 0.62. KNN also performed relatively well, with a median MAE around 0.66, but showed slightly more variance. Linear Regression (LM) had the highest median MAE at 0.75, indicating that it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest median RMSE of approximately 0.83, followed by KNN at 0.85, and Linear Regression (LM) with the highest RMSE at 0.91. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a median R-squared of 0.23, indicating that it explains the highest proportion of variance in the target variable. KNN had a median R-squared of 0.16, while Linear Regression (LM) had the lowest at 0.07, suggesting that it explains the least amount of variance in the data.</p>
-<p>The cross-validation results clearly show that the Random Forest model achieved the lowest average MAE, making it the best-performing model. The KNN model came in second, while Linear Regression had the highest MAE, indicating it performed worse compared to the other models. These results are visually summarized in the boxplots and dot plots shown below, where you can observe the MAE distribution across the folds for each model.</p>
-<p>The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model’s simplicity might have limited its ability to handle the complex feature interactions present in the data.</p>
+<p>Resampling the model results per fold gives insight into the variation of the model’s RMSE and MAE, by feeding this data into the <code>bwplot()</code> function.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Create performance metrix boxplot</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resampling + comparison method taken from https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">resamples</span>(<span class="fu">list</span>(<span class="at">LM=</span>model_lm, <span class="at">KNN=</span>model_knn, <span class="at">RF=</span>model_rf))</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-summary.resamples(object = results)
-
-Models: LM, KNN, RF 
-Number of resamples: 10 
-
-MAE 
-         Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA&#39;s
-LM  0.6244881 0.6935345 0.7576511 0.7478777 0.7956561 0.8518762    0
-KNN 0.6056351 0.6869932 0.7239701 0.7120428 0.7589186 0.7687076    0
-RF  0.6035069 0.6292351 0.6606976 0.6674033 0.6954781 0.7427745    0
-
-RMSE 
-         Min.   1st Qu.    Median      Mean   3rd Qu.     Max. NA&#39;s
-LM  0.7964878 0.8433710 0.9196095 0.9320699 1.0190489 1.095558    0
-KNN 0.7387822 0.8478373 0.9143265 0.9150110 0.9689914 1.078422    0
-RF  0.7546775 0.8085624 0.8306151 0.8625253 0.9083516 1.094348    0
-
-Rsquared 
-           Min.    1st Qu.    Median      Mean   3rd Qu.      Max. NA&#39;s
-LM  0.017419718 0.09220998 0.1633863 0.1645454 0.1981945 0.3481448    0
-KNN 0.006934824 0.11439723 0.1631625 0.1672116 0.2379882 0.3700011    0
-RF  0.021066823 0.18524291 0.2355282 0.2617036 0.3558482 0.4841979    0</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bwplot</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Hint: Did you know, an equivalent figure can be created with `ggmice()`?
-For example, to plot a variable named &#39;my_vrb&#39; from a mids object called
-&#39;my_mids&#39;, run:
-  ggmice(my_mids, ggplot2::aes(x = .imp, y = my_vrb)) +
-  ggplot2::geom_boxplot()
-ℹ See amices.org/ggmice for more info.
-This message is displayed once per session.</code></pre>
-</div>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bwplot</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3909,267 +3873,74 @@ This message is displayed once per session.</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dotplot</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img role="img" src="data:image/png;base64,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" class="img-fluid figure-img" width="672"></p>
-</figure>
 </div>
-</div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> create a custom ggplot that is both aligned (X-axis ticks), faceted and obviously **pretty**.</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Do so with the data.frame data provided in results$values.</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Finally, the average MSE, MAE and R-squared metrics were gathered by looking at their respective average values per model.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Summarise model performance metrics</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data taken from individual model statistics over the k-folded results (e.g. average RMSE).</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">model       =</span> <span class="fu">c</span>(<span class="st">&quot;LM&quot;</span>, <span class="st">&quot;KNN&quot;</span>, <span class="st">&quot;RF&quot;</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">RMSE        =</span> <span class="fu">c</span>(<span class="fl">0.93</span>, <span class="fl">0.92</span>, <span class="fl">0.86</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">MAE         =</span> <span class="fu">c</span>(<span class="fl">0.75</span>, <span class="fl">0.71</span>, <span class="fl">0.67</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Rsquared    =</span> <span class="fu">c</span>(<span class="fl">0.16</span>, <span class="fl">0.17</span>, <span class="fl">0.26</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(models, <span class="at">booktabs =</span> T) <span class="sc">%&gt;%</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">kable_styling</span>(<span class="at">latex_options =</span> args) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
-<div class="kable-table">
-<table>
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
-<tr>
-<th style="text-align:left;">
-Resample
-</th>
-<th style="text-align:right;">
-LM~MAE
-</th>
-<th style="text-align:right;">
-LM~RMSE
-</th>
-<th style="text-align:right;">
-LM~Rsquared
-</th>
-<th style="text-align:right;">
-KNN~MAE
-</th>
-<th style="text-align:right;">
-KNN~RMSE
-</th>
-<th style="text-align:right;">
-KNN~Rsquared
-</th>
-<th style="text-align:right;">
-RF~MAE
-</th>
-<th style="text-align:right;">
-RF~RMSE
-</th>
-<th style="text-align:right;">
-RF~Rsquared
-</th>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">RMSE</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">MAE</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Rsquared</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-Fold01
-</td>
-<td style="text-align:right;">
-0.7486168
-</td>
-<td style="text-align:right;">
-0.8978513
-</td>
-<td style="text-align:right;">
-0.0740991
-</td>
-<td style="text-align:right;">
-0.7687076
-</td>
-<td style="text-align:right;">
-0.9276257
-</td>
-<td style="text-align:right;">
-0.0069348
-</td>
-<td style="text-align:right;">
-0.6208954
-</td>
-<td style="text-align:right;">
-0.8312576
-</td>
-<td style="text-align:right;">
-0.1794090
-</td>
+<tr class="odd">
+<td style="text-align: left;">LM</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">0.16</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Fold02
-</td>
-<td style="text-align:right;">
-0.7917171
-</td>
-<td style="text-align:right;">
-1.0955581
-</td>
-<td style="text-align:right;">
-0.0174197
-</td>
-<td style="text-align:right;">
-0.7635109
-</td>
-<td style="text-align:right;">
-1.0784216
-</td>
-<td style="text-align:right;">
-0.0114233
-</td>
-<td style="text-align:right;">
-0.7427745
-</td>
-<td style="text-align:right;">
-1.0943480
-</td>
-<td style="text-align:right;">
-0.0210668
-</td>
+<tr class="even">
+<td style="text-align: left;">KNN</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.17</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Fold03
-</td>
-<td style="text-align:right;">
-0.6782241
-</td>
-<td style="text-align:right;">
-0.8451367
-</td>
-<td style="text-align:right;">
-0.1568666
-</td>
-<td style="text-align:right;">
-0.7066663
-</td>
-<td style="text-align:right;">
-0.8398872
-</td>
-<td style="text-align:right;">
-0.1124492
-</td>
-<td style="text-align:right;">
-0.6633214
-</td>
-<td style="text-align:right;">
-0.7905188
-</td>
-<td style="text-align:right;">
-0.2315695
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Fold04
-</td>
-<td style="text-align:right;">
-0.7666854
-</td>
-<td style="text-align:right;">
-1.0249323
-</td>
-<td style="text-align:right;">
-0.1465427
-</td>
-<td style="text-align:right;">
-0.6867452
-</td>
-<td style="text-align:right;">
-0.9809469
-</td>
-<td style="text-align:right;">
-0.1679616
-</td>
-<td style="text-align:right;">
-0.7340173
-</td>
-<td style="text-align:right;">
-0.9334411
-</td>
-<td style="text-align:right;">
-0.2394869
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Fold05
-</td>
-<td style="text-align:right;">
-0.7969691
-</td>
-<td style="text-align:right;">
-1.0395144
-</td>
-<td style="text-align:right;">
-0.1923896
-</td>
-<td style="text-align:right;">
-0.7611922
-</td>
-<td style="text-align:right;">
-1.0395859
-</td>
-<td style="text-align:right;">
-0.2153269
-</td>
-<td style="text-align:right;">
-0.7015249
-</td>
-<td style="text-align:right;">
-0.9321386
-</td>
-<td style="text-align:right;">
-0.3838496
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Fold06
-</td>
-<td style="text-align:right;">
-0.7082748
-</td>
-<td style="text-align:right;">
-0.8356696
-</td>
-<td style="text-align:right;">
-0.2982813
-</td>
-<td style="text-align:right;">
-0.7520978
-</td>
-<td style="text-align:right;">
-0.9331251
-</td>
-<td style="text-align:right;">
-0.1202414
-</td>
-<td style="text-align:right;">
-0.6580738
-</td>
-<td style="text-align:right;">
-0.8061708
-</td>
-<td style="text-align:right;">
-0.3578171
-</td>
+<tr class="odd">
+<td style="text-align: left;">RF</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.26</td>
 </tr>
 </tbody>
 </table>
+
+
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> Maybe also consider variable importance, might have surprising insights?</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># e.g. varImp(model_knn, scale=FALSE) (code doesn&#39;t work yet)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<p>Using the above data, the performance of three different supervised learning models were compared: Linear Regression with stepwise feature selection, K-Nearest Neighbours (KNN), and Random Forest. To ensure fair and robust comparisons, 10-fold cross-validation was utilised across all models. This technique helps avoid overfitting by training the models on different data splits and validating them on unseen partitions.</p>
+<p>From the boxplot visualisation and summary table, it was observed that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with an average value of approximately 0.67. KNN also performed relatively well, with an average MAE of 0.71, but showed slightly more variance. Linear Regression (LM) had the highest average MAE at 0.75, indicating that it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest average RMSE of approximately 0.86, followed by KNN at 0.92, and Linear Regression (LM) with the highest RMSE at 0.93. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a average R-squared of 0.26, indicating that it explains the highest proportion of variance in the target variable. KNN had an average R-squared of 0.17, while Linear Regression (LM) had the lowest at 0.16, suggesting that it explains the least amount of variance in the data.</p>
+<p>The cross-validation results clearly show that the Random Forest model achieved the lowest average RMSE, making it the best-performing model. The KNN model came in second, while Linear Regression had the highest RMSE, indicating it performed worse compared to the other models. These results are visually summarised in the boxplot, where the RMSE and MAE distributions of each model across the folds can be observed.</p>
+<p>The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model’s simplicity might have limited its ability to handle the complex feature interactions present in the data.</p>
 </section>
 <section id="chosen-model" class="level1">
 <h1>Chosen model</h1>
-<p>After thoroughly comparing the performance of all three models, we have selected Random Forest as the final model. The cross-validation results showed that Random Forest consistently achieved the best performance in terms of both accuracy (MAE and RMSE) and the ability to explain variance in the data (R-squared). Random Forest’s ensemble learning approach, which aggregates multiple decision trees, allows it to handle complex interactions between variables and reduce overfitting, making it particularly well-suited for this task. Although KNN also showed competitive performance, the lower variability and superior accuracy of Random Forest make it the most reliable choice.</p>
+<p>After thoroughly comparing the performance of all three models, the Random Forest model was selected as the final model. The cross-validation results showed that Random Forest consistently achieved the best performance in terms of both accuracy (MAE and RMSE) and the ability to explain variance in the data (R-squared). Random Forest’s ensemble learning approach, which aggregates multiple decision trees, allows it to handle complex interactions between variables and reduce overfitting, making it particularly well-suited for this task. Although KNN also showed competitive performance, the lower variability and superior accuracy of Random Forest make it the most reliable choice.</p>
 <p>Having chosen the random forest model, predictions were made on the test data using the code below. They have been saved in the <code>predictions.rds</code> file.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Make predictions on test data</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_rf, data_test)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Save predictions</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(predictions, <span class="st">&quot;data/predictions.rds&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_rf, data_test)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Save predictions</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(predictions, <span class="st">&quot;data/predictions.rds&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -4177,7 +3948,7 @@ Fold06
 <h1>Team member contributions</h1>
 <p>Write down what each team member contributed to the project.</p>
 <ul>
-<li>Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy</li>
+<li>Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy,</li>
 <li>Isabelle de Wolf: contribution to collaborative discussion on the modeling and comparison strategy</li>
 <li>Agnieszka Kubica: contribution to collaborative discussion on the modeling and comparison strategy, analysis of variable types, creation of the variable table,description of bar plots in EDA. creation and description of the correlation plot, prepossessing decisions, part of the model creation description, description of the comparison strategy, justification of casting data types in the pre-processing</li>
 <li>Sara Sakhi: contribution to collaborative discussion on the modeling and comparison strategy</li>

@@ -62,11 +62,11 @@ set.seed(123)
 
 The dataset consist of records from two Portuguese high schools and includes both student marks on a mathematics course and a questionnaire concerned with the background of students, their personal life, and their study habits. The original dataset studied by Paulo Cortez and Alice Silva (2008) also included the performance of a Portuguese course with an additional 649 observations. They did research on the influence of the demographical, social, and school-related factors on students' performance. However, this will not be included in this prediction. 
 
-They used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis (Cortez and Silva, 2008, p.12). We will replicate their findings with linear regression, k-nearest neighboures, and Random Forest. To this end, we intend to find the best performing prediction for mathematical scores model on our test set. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset, with an hypothesis that non-linear function models will perform well (idem, p.12).    
+They used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis (Cortez and Silva, 2008, p.12). This study will replicate their findings with linear regression, k-nearest neighboures, and Random Forest, with the intention to find the best performing prediction for mathematical scores model on the test set. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset, with an hypothesis that non-linear function models will perform well (idem, p.12).    
 
-Furthermore, due to the high dimensionality (31 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (KNN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data. Feature selection is crucial to mitigate these issues and improve model performance.
+Furthermore,the high dimensionality (30 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (KNN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data. Feature selection is crucial to mitigate these issues and improve model performance.
 
-The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarizes information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
+The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarises information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
 
 ```{r}
 #| code-summary: "Variable descriptions"
@@ -164,7 +164,7 @@ grid.arrange(
 )
 ```
 
-Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it's doubtful wheter they actually represent numerical values, as they seem more like ordered variables. Perhaps it would be best to cast `Medu` and `Fedu` to categorical variables for this reason. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.
+Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it's doubtful whether they actually represent numerical values, as they seem more like ordered variables. Perhaps it would be best to cast `Medu` and `Fedu` to categorical variables for this reason. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.
 
 ```{r}
 #| label: Correlation matrix
@@ -207,7 +207,7 @@ cortile_c <- ggplot(melted_cormatrix_c, aes(y = Var2, x = Var1, fill = value))+
 print(cortile_c)
 ```
 
-The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.
+The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables `absences`, `freetime` and `famrel` reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.
 
 ## Missing data
 ```{r}
@@ -218,15 +218,13 @@ The correlation plots reveals relatively weak or lack of correlations between th
 anyNA(data_train)
 ```
 
-The dataset contains no missing data. Moreover, disguised missing values—such as `0`, `-999` or `"None"`—seems absent as well when investigating the data using the provided distributions for the predictor data. The only exception if `Medu` and `Fedu`, where there is a small number of `None` entries, that could represent no education or missing values. However, the proper representation is assumed. 
+The dataset contains no missing data. Moreover, disguised missing values—such as `0`, `-999` or `"None"`—seems absent as well when investigating the data using the provided distributions for the predictor data. The only exception is `Medu` and `Fedu`, where there is a small number of `None` entries, that could represent no education or missing values. However, the proper representation is assumed. 
 
 # Data transformation and pre-processing
 
 In the EDA it has been discovered that some of the variables are not necessarily correctly labeled as numerical. Particularly, `Medu`, `Fedu` and  a variety of "numerical" variables using 5 point Likert scales are ordinal variables. That is because the the distance between each of their categories is not meaningful. However, studies have shown that ordinal variables with 5 or more categories, particularly in case of Likert scales, "ordinal approximation of a continuous variable"  does not negatively impact the analysis [Statistics Solutions, @stats_sol]. Effectively, the variables can be treated as continuous in the modelling process. A decision is made to leave the Likert scale variables as numerical. However, `Fedu` and `Medu` are cast to ordered factors and are not being approximated as continuous. Because the 5th category: `None` education being very small and possibly including disguised missing data, the minimal number of categories may be questioned. Additionally, the distances between different levels of education are likely less meaningful than in case of the Likert scales. 
 
----
-
-In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate MSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the `data_train` and `data_test` sets to prevent "data leakage", which would cause target information to be available during the training process whilst being unavailable when actually making predictions.
+In addition to casting the data to the correct datatypes, the continuous predictors are transformed using a z-score standardisation. This transformation is required for one of the models (KNN), since each feature should be weighted equally when looking for neighbouring datapoints and their respective distances. To facilitate RMSE comparison between the models, predictor data is standardised for all the models by scaling the data prior to the training process. That said, standardisation is applied separately to the `data_train` and `data_test` sets to prevent "data leakage", which would cause target information to be available during the training process whilst being unavailable when actually making predictions.
 
 ```{r}
 #| label: preprocessing
@@ -257,18 +255,22 @@ For this assignment, three models will be compared: a linear regression model wi
 The linear regression model will be build using backward stepwise feature selection. This will be done to reduce the model's dimensionality, and thus reduce the variance of the model by taking into account the model complexity. The stepwise function aims to reduce the AIC error of the model, which is an estimator of prediction error that includes a penalty for using more parameters / predictors. Backwards stepwise feature selection is an algorithm that starts the modeling with all features included in the formula. Then it removes a single feature that leads to the largest AIC reduction in each step. When no AIC reduction can be achived, the current model is chosen as the best one. The backwards selection is chosen, as opposed to best-subset or forward selection, because the former is computationally expensive and the latter may not arrive at the optimal model. 
 
 ## KNN model
-The tuning the number of nearest neighbors - k allows for the KNN model to optimize the bias and variance tradeoff. To do so, the KNN model will be built using the `tunelength` parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average MSE over all the cross validation folds will be chosen as the final model. 
+Tuning the number of nearest neighbors (`k`) allows for the KNN model to optimize the bias and variance tradeoff. To do so, the KNN model will be built using the `tunelength` parameter. By supplying a value to this parameter, multiple k-values will be used to compute KNN models. Of these KNN models, the model with the lowest average RMSE over all the cross validation folds will be chosen as the final model. 
 
 ## Random forest
-The random forest model already tries to minimize overfitting in the building process by sampling both data points and features across different trees and averaging the results. However, it will also be k-fold cross validated, as mentioned before. While this step is not necessary for reducing the variance of the model, it is required for fair comparison across all of the trained models. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the MSE will be the lowest. 
+The random forest model already tries to minimize overfitting in the building process by sampling both data points and features across different trees and averaging the results. However, it will also be k-fold cross validated, as mentioned before. While this step is not necessary for reducing the variance of the model, it is required for fair comparison across all of the trained models. The final random forest model will be the one where the number of predictors chosen for each tree is optimized, meaning the model with the number of parameters in each tree model where the RMSE will be the lowest. 
 
 ## Comparison 
-The comparison of the models will be based on their performance in the K-fold cross validation. K-fold was chosen as opposed to a train and validation data split, as it reduces the chance that one of the models performed particularly well because a the validation data was particularly well suited for it, but performance on other splits would be much worse. In other words, it is a better guarantee of not overfitting the models and identifying ones who's performance is consistently good. To facilitate this comparison, the Mean Squared Error (MSE) was chosen as the the main performance metric. For MSE scores to be a fair comparison metric, the models have to be trained and tested on folds consisting of the same data points. That is the reson the random forest model will also be included in the K-fold procedure. To guarantee the algorithm is performed on the same data partitions between each model, the seed can be set right before each of the cross-validation processes [@Brownlee_2019].
+The comparison of the models will be based on their performance in the K-fold cross validation. K-fold was chosen as opposed to a train and validation data split, as it reduces the chance that one of the models performed particularly well because a the validation data was particularly well suited for it, but performance on other splits would be much worse. In other words, it is a better guarantee of not overfitting the models and identifying ones who's performance is consistently good. To facilitate this comparison, the Root Mean Squared Error (RMSE) was chosen as the the main performance metric. For RMSE scores to be a fair comparison metric, the models have to be trained and tested on folds consisting of the same data points. That is the reason the random forest model will also be included in the K-fold procedure. To guarantee the algorithm is performed on the same data partitions between each model, the seed can be set right before each of the cross-validation processes [@Brownlee_2019].
 
 
 # Model creation
 
-This section contains the code used to train and k-fold cross-validate the chosen models. We first set up the folds we want to use for the k-fold cross validation. We decided to set `k` to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. We found that this data ratio as sufficient. To ensure comparability of performance of the models, the seed was set to value `123` before each training algorithm. 
+The training controle is a cross-validation k-fold method. The configuration is initialised with the number of folds (`k`) set to 10, thus performing the training and validation of models 10 times over different combinations of data. Each time the model was validated on approximately 30 cases and train on the remaining data. It was found that this data ratio was sufficient. To ensure comparability of the model performance, the seed was set to value `123` before each training algorithm.
+
+The LmStepAIC is explained earlier in the modelling strategy section. Furthermore, only the final model is of interest, thus the `trace` parameter is set to `False` within the `train()` function. The LM with all the variables has a high complexity in this model, and this method reduces the complexity by removing the variables with low impact (based on AIC). Backwards direction was chosen to reduce a complex model to a simpler model.
+
+The KNN model has little hyperparameters. Besides the implementation of cross-validation, the KNN model will select the score of its closest neighest neighboures based on the variables in the dataset. This method will be applied for to `k` values 5 to 23, with increments of 2, thus creating 10 `k` instances er per the `tuneLength` parameter that was set to 10.
 
 ```{r}
 #| label: Train configuration
@@ -297,7 +299,6 @@ model_lm <- train(
 )
 ```
 
-The k-NN model has little hyperparameters. Besides the implimentation of cross-validation, the k-NN model will select the score of its closest neighest neighboures based on the variables in the dataset. This method will be applied for k=5 to k=23. We wanted to select 10 different k's, and thus set the tune length to 10.
 
 ```{r}
 #| label: KNN model
@@ -336,37 +337,48 @@ model_rf <- train(
 
 # Model comparison
 
-In this study, we compared the performance of three different supervised learning models: Linear Regression with stepwise feature selection, K-Nearest Neighbours (KNN), and Random Forest. To ensure fair and robust comparisons, we used 10-fold cross-validation across all models. This technique helps avoid overfitting by training the models on different data splits and validating them on unseen partitions. 
-
-From the boxplot visualization, we can see that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with a median value of approximately 0.62. KNN also performed relatively well, with a median MAE around 0.66, but showed slightly more variance. Linear Regression (LM) had the highest median MAE at 0.75, indicating that it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest median RMSE of approximately 0.83, followed by KNN at 0.85, and Linear Regression (LM) with the highest RMSE at 0.91. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a median R-squared of 0.23, indicating that it explains the highest proportion of variance in the target variable. KNN had a median R-squared of 0.16, while Linear Regression (LM) had the lowest at 0.07, suggesting that it explains the least amount of variance in the data.
-
-The cross-validation results clearly show that the Random Forest model achieved the lowest average MAE, making it the best-performing model. The KNN model came in second, while Linear Regression had the highest MAE, indicating it performed worse compared to the other models. These results are visually summarized in the boxplots and dot plots shown below, where you can observe the MAE distribution across the folds for each model.
-
-The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model's simplicity might have limited its ability to handle the complex feature interactions present in the data.
+Resampling the model results per fold gives insight into the variation of the model's RMSE and MAE, by feeding this data into the `bwplot()` function.
 
 ```{r}
 #| label: Model comparison
-#| code-fold: false
-#| code-summary: "Compare the models"
+#| code-summary: "Create performance metrix boxplot"
+#| message: false
 
 # Resampling + comparison method taken from https://machinelearningmastery.com/compare-models-and-select-the-best-using-the-caret-r-package/
 results <- resamples(list(LM=model_lm, KNN=model_knn, RF=model_rf))
-summary(results)
 bwplot(results)
-dotplot(results)
-
-# TODO create a custom ggplot that is both aligned (X-axis ticks), faceted and obviously **pretty**.
-# Do so with the data.frame data provided in results$values.
-head(results$values)
-
-# TODO Maybe also consider variable importance, might have surprising insights?
-# e.g. varImp(model_knn, scale=FALSE) (code doesn't work yet)
-
 ```
+
+Finally, the average MSE, MAE and R-squared metrics were gathered by looking at their respective average values per model.
+
+```{r}
+#| label: Summary table
+#| code-summary: "Summarise model performance metrics"
+
+# Data taken from individual model statistics over the k-folded results (e.g. average RMSE).
+models <- data.frame(
+  model       = c("LM", "KNN", "RF"),
+  RMSE        = c(0.93, 0.92, 0.86),
+  MAE         = c(0.75, 0.71, 0.67),
+  Rsquared    = c(0.16, 0.17, 0.26)
+)
+
+kbl(models, booktabs = T) %>%
+    kable_styling(latex_options = args) 
+```
+
+Using the above data, the performance of three different supervised learning models were compared: Linear Regression with stepwise feature selection, K-Nearest Neighbours (KNN), and Random Forest. To ensure fair and robust comparisons, 10-fold cross-validation was utilised across all models. This technique helps avoid overfitting by training the models on different data splits and validating them on unseen partitions. 
+
+From the boxplot visualisation and summary table, it was observed that Random Forest (RF) consistently achieved the lowest mean absolute error (MAE), with an average value of approximately 0.67. KNN also performed relatively well, with an average MAE of 0.71, but showed slightly more variance. Linear Regression (LM) had the highest average MAE at 0.75, indicating that it made larger errors in its predictions compared to the other two models. The RMSE results align closely with the MAE results. Random Forest (RF) achieved the lowest average RMSE of approximately 0.86, followed by KNN at 0.92, and Linear Regression (LM) with the highest RMSE at 0.93. This confirms that Random Forest made the smallest errors overall, while Linear Regression struggled with larger prediction errors. R-squared measures the proportion of variance in the dependent variable that is predictable from the independent variables. Here again, Random Forest (RF) outperformed the other models, with a average R-squared of 0.26, indicating that it explains the highest proportion of variance in the target variable. KNN had an average R-squared of 0.17, while Linear Regression (LM) had the lowest at 0.16, suggesting that it explains the least amount of variance in the data.
+
+The cross-validation results clearly show that the Random Forest model achieved the lowest average RMSE, making it the best-performing model. The KNN model came in second, while Linear Regression had the highest RMSE, indicating it performed worse compared to the other models. These results are visually summarised in the boxplot, where the RMSE and MAE distributions of each model across the folds can be observed.
+
+
+The superior performance of the Random Forest model can be attributed to its ability to capture complex, non-linear relationships between features while controlling for overfitting through ensemble learning. Meanwhile, the KNN model also performed reasonably well, benefiting from the z-score standardization applied to ensure that all features contributed equally to distance calculations. In contrast, the Linear Regression model's simplicity might have limited its ability to handle the complex feature interactions present in the data.
 
 # Chosen model
 
-After thoroughly comparing the performance of all three models, we have selected Random Forest as the final model. The cross-validation results showed that Random Forest consistently achieved the best performance in terms of both accuracy (MAE and RMSE) and the ability to explain variance in the data (R-squared).
+After thoroughly comparing the performance of all three models, the Random Forest model was selected as the final model. The cross-validation results showed that Random Forest consistently achieved the best performance in terms of both accuracy (MAE and RMSE) and the ability to explain variance in the data (R-squared).
 Random Forest’s ensemble learning approach, which aggregates multiple decision trees, allows it to handle complex interactions between variables and reduce overfitting, making it particularly well-suited for this task. Although KNN also showed competitive performance, the lower variability and superior accuracy of Random Forest make it the most reliable choice.
 
 Having chosen the random forest model, predictions were made on the test data using the code below. They have been saved in the `predictions.rds` file. 
@@ -374,6 +386,7 @@ Having chosen the random forest model, predictions were made on the test data us
 ```{r}
 #| label: Prediction test data
 #| code-summary: "Make predictions on test data"
+#| message: false
 
 # Make predictions
 predictions <- predict(model_rf, data_test)
@@ -386,7 +399,7 @@ write_rds(predictions, "data/predictions.rds")
 
 Write down what each team member contributed to the project.
 
-- Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy 
+- Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy, 
 - Isabelle de Wolf: contribution to collaborative discussion on the modeling and comparison strategy 
 - Agnieszka Kubica: contribution to collaborative discussion on the modeling and comparison strategy, analysis of variable types, creation of the variable table,description of bar plots in EDA. creation and description of the correlation plot, prepossessing decisions, part of the model creation description, description of the comparison strategy, justification of casting data types in the pre-processing 
 - Sara Sakhi: contribution to collaborative discussion on the modeling and comparison strategy 
