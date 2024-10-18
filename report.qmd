@@ -60,13 +60,15 @@ set.seed(123)
 
 # Data description
 
-The dataset consist of records from two Portuguese high schools and includes both student marks on a mathematics course and a questionnaire concerned with the background of students, their personal life, and their study habits. The original dataset studied by Paulo Cortez and Alice Silva (2008) also included the performance of a Portuguese course with an additional 649 observations. They did research on the influence of the demographical, social, and school-related factors on students' performance. However, this will not be included in this prediction. 
+The dataset consist of records from two Portuguese high schools and includes both student marks on a mathematics course and a questionnaire concerned with the background of students, their personal life, and their study habits. The data from @Original_pap research on the influence of the demographical, social, and school-related factors on students' performance. The original dataset also included the performance of a Portuguese course with an additional 649 observations. However, those will not be included in this assignment.
 
-They used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis (Cortez and Silva, 2008, p.12). This study will replicate their findings with linear regression, k-nearest neighboures, and Random Forest, with the intention to find the best performing prediction for mathematical scores model on the test set. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset, with an hypothesis that non-linear function models will perform well (idem, p.12).    
+@Original_pap used linear regression, neural networks, Decision Trees, Support Vector Machines, and Random Forest in their analysis [@Original_pap, p. 12]. This study will replicate their findings with linear regression, k-nearest neighbours, and Random Forest, with the intention to find the best performing prediction model on the test dataset. Other literature suggests that the background and social factors influence school performance of teenagers. Therefore, it is valid to perform a prediction model on this dataset and expect relatively good performance [@Original_pap, p. 12].    
 
-Furthermore,the high dimensionality (30 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (KNN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data. Feature selection is crucial to mitigate these issues and improve model performance.
+The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarises information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality. The high dimensionality (30 features) relative to the sample size (316 observations) results in two key challenges. First, the curse of dimensionality makes distance-based methods like k-Nearest Neighbors (KNN) less effective, as distances become less meaningful in high-dimensional spaces. Second, the large number of variables increases the risk of overfitting, where models capture noise rather than meaningful patterns due to insufficient data relative to the number of features. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data. Feature selection is crucial to mitigate these issues and improve model performance.
 
-The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data. The data used to train the prediction model consists of 316 observations of the outcome variable `score` and 30 predictor variables. The table below summarises information about each of these variables. Importantly, the degree of the data is rather large compared to the cardinality.  Additionally, `Medu` and `Fedu` are found to be of ordinal nature, with the distance between the numbers decoding categories not being meaningful. Thus, representing these variables as an ordered factor is more fitting, rather than numerical variables as in the original metadata. Lastly, the numerical variables exhibit a variety of scales.
+Apart from high dimensionality, the Variable Descriptions table reveals presence of multiple ordinal variables that represent their categories with numbers. Examples include: `Medu`, `studytime` and `freetime`. The numerical representation means that the variables are treated as if continuous by the models, which is a problem since the distances between the categories of such variables are meaningless. It may lead to a worse performance of linear regression, as its coefficients interpretation is based on unit increases and assumption of constant change over those step increases. Recasting those variables into ordered factors and, thus, using dummy encoding for the linear modeling should be considered. 
+
+Additionally, the numerical variables exhibit a variety of scales. This is a problem for the KNN model, since variables with larger scales become more important in distance based models. Thus, normalization of numerical variables is required.  
 
 ```{r}
 #| code-summary: "Variable descriptions"
@@ -80,6 +82,8 @@ kbl(descs, booktabs = T) %>%
     kable_styling(latex_options = args) 
 
 ```
+
+The data used to test the prediction model contains 79 observations with 30 predictor variables. The test data will not be explored any further in the EDA, to ensure no bias will be introduced when working with the training data.  
 
 ## Variable distributions
 
@@ -164,7 +168,9 @@ grid.arrange(
 )
 ```
 
-Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it's doubtful whether they actually represent numerical values, as they seem more like ordered variables. Perhaps it would be best to cast `Medu` and `Fedu` to categorical variables for this reason. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.
+Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it's doubtful whether they actually represent continuous values, as their disjointed distributions seem more like ordered variables. This is consistent with the variable descriptions. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.
+
+## Correlations 
 
 ```{r}
 #| label: Correlation matrix
@@ -207,7 +213,7 @@ cortile_c <- ggplot(melted_cormatrix_c, aes(y = Var2, x = Var1, fill = value))+
 print(cortile_c)
 ```
 
-The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables `absences`, `freetime` and `famrel` reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.
+The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables `absences`, `freetime` and `famrel` reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases. Therefore, low correlation is not enough information for feature selection, however, it supports the noticed need for some form of it. 
 
 ## Missing data
 ```{r}
@@ -218,7 +224,7 @@ The correlation plots reveals relatively weak or lack of correlations between th
 anyNA(data_train)
 ```
 
-The dataset contains no missing data. Moreover, disguised missing values—such as `0`, `-999` or `"None"`—seems absent as well when investigating the data using the provided distributions for the predictor data. The only exception is `Medu` and `Fedu`, where there is a small number of `None` entries, that could represent no education or missing values. However, the proper representation is assumed. 
+The dataset contains no missing data. Moreover, disguised missing values—such as `0`, `-999` or `"None"`— seems absent as well when investigating the data using the provided distributions for the predictor data. The only exception is `Medu` and `Fedu`, where there is a small number of `0` entries, that could represent no education or missing values. However, the proper representation is assumed. 
 
 # Data transformation and pre-processing
 
