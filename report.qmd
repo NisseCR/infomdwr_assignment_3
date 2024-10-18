@@ -399,7 +399,7 @@ write_rds(predictions, "data/predictions.rds")
 
 Write down what each team member contributed to the project.
 
-- Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy, 
+- Nisse Hermsen: contribution to collaborative discussion on the modeling and comparison strategy, project setup, consistent folding with seed, model comparison boxplot and table, data normalisation using z-score, missing data check and description, draft for gridded histrograms, code-block folding and naming, final proof-read + rewrite
 - Isabelle de Wolf: contribution to collaborative discussion on the modeling and comparison strategy 
 - Agnieszka Kubica: contribution to collaborative discussion on the modeling and comparison strategy, analysis of variable types, creation of the variable table,description of bar plots in EDA. creation and description of the correlation plot, prepossessing decisions, part of the model creation description, description of the comparison strategy, justification of casting data types in the pre-processing 
 - Sara Sakhi: contribution to collaborative discussion on the modeling and comparison strategy 
