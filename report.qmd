@@ -79,9 +79,7 @@ kbl(descs, booktabs = T) %>%
 ```
 
 
-TODO: Too many variables narrative main problems:
-- curse of dimentionality - distance for knn becomes less meaningful
-- overfitting because of many variables and not too many rows
+The dataset contains quite some variables and fewer rows, which could result in a very high dimensionality . As the number of predictors grows (particularly with dummy coding), distance metrics models like KNN models become less reliable, as data points tend to spread out, making it harder to identify meaningful neighbors. Additionally, with more variables, the risk of overfitting increases. The model can become overly complex, capturing noise in the training data rather than true patterns, which leads to poor performance on unseen data.
 
 ```{r}
 #| label: EDA visualisation histogram
@@ -91,8 +89,13 @@ TODO: Too many variables narrative main problems:
 
 make_hist <- function(col) {
   ggplot(data_train, aes_string(x = col)) +
-    geom_histogram() +
-    theme_minimal()
+    geom_histogram(fill = "steelblue", color = "black", alpha = 0.8) +
+    labs(x = col, y = "Frequency") +
+    theme_minimal() +
+    theme(
+      panel.grid.major = element_line(size = 0.5, linetype = 'dashed', color = 'gray'),
+      panel.grid.minor = element_blank()
+    )
 }
 
 
@@ -123,12 +126,16 @@ grid.arrange(
 
 make_bar <- function(col) {
    ggplot(data_train, aes(x = fct_infreq(as.factor(data_train[[col]])))) +
-    geom_bar(width = 0.8) +
+    geom_bar(width = 0.8, fill = "steelblue", color = "black", alpha = 0.8) +
     theme_minimal() +
-    xlab(col) +
+    labs(x = col, y = "Frequency") +
     coord_flip() +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-    scale_y_continuous(expand = expansion(mult = c(0.1, 0.3)))
+    scale_y_continuous(expand = expansion(mult = c(0.1, 0.3))) +
+    theme(
+      panel.grid.major = element_line(size = 0.5, linetype = 'dashed', color = 'gray'),
+      panel.grid.minor = element_blank()
+    )
     
 }
 
@@ -154,7 +161,8 @@ grid.arrange(
   nrow = 4
 )
 ```
-Looking at the variables, non really stand out. numerical variables are a bit skewed, but this might be due to the variable descriptions. For the categorical ones, some of them seemed a bit skewed as well, but no obvious flaws or errors. There does not seem to be any intentionally disguised missing data. 
+
+Looking at the histograms and bar plots, none of the variables stand out as particularly unusual. The numerical variables show some skewness, which might be expected given their descriptions. For some numerical variables it's doubtful wheter they actually represent numerical values, as they seem more like ordered variables. Perhaps it would be best to cast `Medu` and `Fedu` to categorical variables for this reason. For the categorical variables, there are a few that seem somewhat imbalanced, but nothing that suggests any clear issues or data quality concerns. Overall, there don’t appear to be any obvious errors in the distributions, and the plots show no signs of intentionally hidden missing data either.
 
 ## Missing data
 ```{r}
@@ -208,6 +216,7 @@ cortile_c <- ggplot(melted_cormatrix_c, aes(y = Var2, x = Var1, fill = value))+
 
 print(cortile_c)
 ```
+
 The correlation plots reveals relatively weak or lack of correlations between the variables. Score is most strongly correlated with failures, the relationship is negative. The variables absences, freetime and famrel reveal very little correlation with score. This may suggest that they are not the best predictors. However, there is a chance that once controlled for other variables the predictive power of the variables increases, thus, correlation is not enough information for feature selection.
 
 # Data transformation and pre-processing
