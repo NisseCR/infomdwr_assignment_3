@@ -239,7 +239,7 @@ In addition to casting the data to the correct datatypes, the continuous predict
 #| code-summary: "Preprocessing"
 
 # Cast variables to factor based on EDA.
-factorise <- c("Medu", "Fedu")
+factorise <- c("studytime", "traveltime")
 data_train <- data_train %>% mutate_at(vars(factorise), as.factor) 
 data_test <- data_test %>% mutate_at(vars(factorise), as.factor) 
 
